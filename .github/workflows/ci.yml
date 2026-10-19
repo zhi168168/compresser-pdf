@@ -1,0 +1,54 @@
+name: Verify application
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.19.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: |
+            pnpm-lock.yaml
+            server/pnpm-lock.yaml
+      - name: Install root dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Install account test dependencies
+        run: pnpm --dir server install --ignore-workspace --frozen-lockfile
+      - name: Install Chromium
+        run: |
+          pnpm exec playwright install chromium --with-deps
+          node --input-type=module -e "import {chromium} from '@playwright/test'; console.log('CHROME_PATH=' + chromium.executablePath())" >> "$GITHUB_ENV"
+      - name: Start browser test server
+        run: |
+          pnpm dev > /tmp/compresser-vite.log 2>&1 &
+          for attempt in $(seq 1 40); do
+            if curl --fail --silent http://localhost:5178/ > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/compresser-vite.log
+          exit 1
+      - name: Production build
+        run: pnpm build
+      - name: Application and browser tests
+        run: pnpm test
+      - name: Account lifecycle tests
+        run: pnpm --dir server test

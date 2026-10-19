@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#174f3b" />
+    <title>Compresser PDF en ligne gratuitement | compresser pdf</title>
+    <meta name="description" content="Compressez un PDF gratuitement dans votre navigateur, sans envoyer votre fichier ni créer de compte. Choisissez le niveau de compression adapté à votre document." />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#compressor">Aller au compresseur PDF</a>
+    <header class="site-header shell">
+      <a class="brand" href="/" aria-label="Accueil compresser pdf"><svg class="brand-mark" viewBox="0 0 32 36" aria-hidden="true"><path d="M6 1h13l8 8v23a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V4a3 3 0 0 1 3-3Z" fill="currentColor"/><path d="M19 1v8h8M10 15l6 6 6-6M16 12v13M10 28h12" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>compresser<span class="brand-light"> pdf</span></span></a>
+      <nav aria-label="Navigation principale"><a href="#how-it-works">Comment ça marche</a><a href="#privacy">Confidentialité</a><a href="#faq">FAQ</a></nav>
+      <div class="language-switch" role="navigation" aria-label="Langue"><a href="/" lang="fr" hreflang="fr" aria-current="page">Français</a><span aria-hidden="true"> / </span><a href="/en/" lang="en" hreflang="en">English</a></div>
+      <button class="sign-in" type="button" data-auth-open>Se connecter <span aria-hidden="true">↗</span></button>
+    </header>
+
+    <main>
+      <section class="hero shell" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <h1 id="hero-title">Compresser un PDF<br /><span>Gardez l’essentiel.</span></h1>
+          <p>Allégez vos fichiers pour les partager plus facilement. Compressez votre PDF dans votre navigateur : vos documents restent sur votre appareil.</p>
+          <div class="hero-assurance"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6l8-3Z"/><path d="m8 12 3 3 5-6"/></svg>Sans envoi de fichier. Sans inscription.</div>
+        </div>
+
+        <section class="compressor" id="compressor" aria-label="Outil de compression PDF">
+          <div class="tool-heading"><h2>Allégez votre PDF.</h2><span class="local-indicator"><span></span> Traitement sur votre appareil</span></div>
+          <div id="drop-zone" class="drop-zone" tabindex="0" role="button">
+            <div class="upload-icon"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M13 5h15l9 9v26a3 3 0 0 1-3 3H13a3 3 0 0 1-3-3V8a3 3 0 0 1 3-3Z"/><path d="M28 5v10h9M24 34V22m-5 5 5-5 5 5"/></svg></div>
+            <strong>Déposez votre PDF ici</strong>
+            <span class="drop-or">ou sélectionnez-le sur votre appareil</span>
+            <span class="button choose-button">Choisir un PDF <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h12m-5-5 5 5-5 5"/></svg></span>
+            <span class="file-limit">Un PDF à la fois · jusqu’à 100 Mo</span>
+          </div>
+          <input id="file-input" type="file" accept="application/pdf,.pdf" aria-label="Choisir un fichier PDF" hidden />
+          <div id="selected-file" class="selected-file" hidden><div class="file-symbol">PDF</div><div class="file-details"><strong id="file-name"></strong><span id="file-size"></span></div><button id="remove-file" class="icon-button" aria-label="Retirer le fichier sélectionné" type="button">×</button></div>
+          <fieldset id="mode-options" class="mode-options"><legend>Choisissez votre compression</legend>
+            <label class="mode"><input type="radio" name="mode" value="lossless" /><span><strong>Sans perte</strong><small>Structure seule</small></span></label>
+            <label class="mode"><input type="radio" name="mode" value="recommended" checked /><span><strong>Haute qualité</strong><small>Recommandé</small></span></label>
+            <label class="mode"><input type="radio" name="mode" value="stronger" /><span><strong>Fichier réduit</strong><small>Compression accrue</small></span></label>
+          </fieldset>
+          <p id="quality-note" class="quality-note">Conserve les dimensions des images et optimise les photos compatibles. Certains détails peuvent changer. Le texte et les graphiques vectoriels restent nets.</p>
+          <button id="compress-button" class="button compress-button" type="button" disabled>Compresser le PDF <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h12m-5-5 5 5-5 5"/></svg></button>
+          <div id="progress-panel" class="progress-panel" hidden><div class="progress-heading"><span id="progress-message" role="status">Préparation de votre PDF…</span><button id="cancel-button" class="text-button" type="button">Annuler</button></div><progress id="compression-progress" max="100" value="0">0%</progress><p class="small-muted">Gardez cet onglet ouvert. Votre fichier reste sur cet appareil.</p></div>
+          <p id="error-message" class="error-message" role="alert" hidden></p>
+          <div id="result-panel" class="result-panel" aria-live="polite" hidden><div class="result-heading"><span class="success-icon" aria-hidden="true">✓</span><div><h3 id="result-title">Votre PDF est prêt.</h3><p id="result-description"></p></div></div><div class="size-comparison"><div><span>Original</span><strong id="original-size"></strong></div><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h12m-5-5 5 5-5 5"/></svg><div><span>Fichier à télécharger</span><strong id="output-size"></strong></div><span id="savings" class="savings"></span></div><a id="download-button" class="button" href="#" download>Télécharger le PDF <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v10m-4-4 4 4 4-4M4 14v3h12v-3"/></svg></a><button id="start-over" class="text-button start-over" type="button">Compresser un autre PDF</button></div>
+          <p class="tool-footnote"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="2"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>Votre PDF reste dans votre navigateur.</p>
+        </section>
+      </section>
+
+      <section class="steps-section shell" id="how-it-works" aria-labelledby="steps-title"><div class="section-intro"><span class="section-label">MOINS DE POIDS. PLUS DE SIMPLICITÉ.</span><h2 id="steps-title">Trois étapes.<br /> Un PDF plus léger.</h2><p>Sans installation ni lien envoyé par e-mail.</p></div><ol class="steps"><li><span class="step-number">01</span><h3>Choisissez votre PDF</h3><p>Déposez un document ou sélectionnez-le sur votre appareil. Aucun compte nécessaire.</p></li><li><span class="step-number">02</span><h3>Trouvez le bon équilibre</h3><p>Choisissez une optimisation sans perte, une haute qualité ou une compression des images plus poussée.</p></li><li><span class="step-number">03</span><h3>Téléchargez votre fichier</h3><p>Consultez le gain réel et enregistrez votre PDF. Si sa taille ne diminue pas, vous récupérez l’original.</p></li></ol></section>
+
+      <section class="privacy-section" id="privacy" aria-labelledby="privacy-title"><div class="shell privacy-layout"><div><span class="section-label">VOS DOCUMENTS RESTENT PRIVÉS.</span><h2 id="privacy-title">Un fichier plus léger.<br />Vos données chez vous.</h2></div><div class="privacy-copy"><p class="privacy-lead">Vos documents n’ont pas besoin de passer par un serveur.</p><p>La compression s’effectue localement dans votre navigateur, avec les ressources de votre appareil. Le PDF n’est ni envoyé ni stocké sur nos serveurs, ni transmis à un service d’IA.</p><p>Vous pouvez utiliser le compresseur sans vous connecter. Si vous créez un compte, les informations de ce compte sont envoyées à notre service d’authentification. Votre PDF reste sur votre appareil.</p><a class="inline-link" href="/privacy.html">Lire notre politique de confidentialité <span aria-hidden="true">↗</span></a></div></div></section>
+
+      <section class="quality-section shell" aria-labelledby="quality-title"><div class="quality-copy"><span class="section-label">COMPRENDRE POUR MIEUX CHOISIR.</span><h2 id="quality-title">Bien compresser,<br />c’est savoir préserver.</h2><p>Le texte et les graphiques vectoriels conservent leur format. Nous optimisons les images intégrées compatibles plutôt que de convertir chaque page en image.</p><a class="inline-link" href="/guides/compress-pdf-without-losing-quality.html">Notre guide de la qualité PDF <span aria-hidden="true">↗</span></a></div><div class="quality-notes"><div><span>01</span><div><h3>Gardez un texte net</h3><p>Le texte natif reste sélectionnable et net lorsque vous zoomez.</p></div></div><div><span>02</span><div><h3>Choisissez le compromis</h3><p>Le mode Haute qualité recompresse les images. Choisissez Sans perte lorsque chaque pixel compte.</p></div></div><div><span>03</span><div><h3>Connaissez les limites</h3><p>Un fichier déjà optimisé peut très peu diminuer. Le traitement des gros documents dépend de la mémoire disponible sur votre appareil.</p></div></div></div></section>
+
+      <section class="faq-section shell" id="faq" aria-labelledby="faq-title"><div><span class="section-label">VOS QUESTIONS, NOS RÉPONSES.</span><h2 id="faq-title">Des réponses<br /> sans détour.</h2></div><div class="faq-list"><details><summary>Ce compresseur PDF est-il gratuit ?</summary><p>Oui. Vous pouvez compresser et télécharger un PDF sans créer de compte.</p></details><details><summary>La compression réduit-elle la qualité du PDF ?</summary><p>Le mode Sans perte optimise la structure du PDF sans modifier volontairement les pixels des images. Les modes Haute qualité et Fichier réduit peuvent modifier les détails des images. Le texte natif et les graphiques vectoriels sont préservés. Vérifiez toujours le document téléchargé avant de le partager.</p></details><details><summary>Mes PDF sont-ils envoyés sur un serveur ?</summary><p>Non. Le compresseur lit et traite votre fichier localement dans le navigateur. L’inscription et la connexion à un compte utilisent une connexion séparée à un serveur, sans inclure votre PDF.</p></details><details><summary>Pourquoi mon PDF n’est-il pas plus petit ?</summary><p>Certains PDF sont déjà bien compressés. D’autres contiennent des images que cet outil ne modifie pas. Si l’optimisation produit un fichier plus volumineux, nous vous proposons l’original.</p></details><details><summary>Puis-je compresser un PDF sur mon téléphone ?</summary><p>Oui, dans un navigateur récent compatible. Les gros fichiers peuvent dépasser la mémoire disponible sur votre téléphone. Essayez sur un ordinateur si le traitement échoue ou si l’onglet se ferme.</p></details><details><summary>Et les PDF signés ou protégés par mot de passe ?</summary><p>Les fichiers chiffrés ne sont pas pris en charge. Modifier un PDF signé numériquement peut invalider sa signature : le compresseur refuse donc les PDF lorsqu’il détecte une signature numérique. Conservez l’original pour tout usage juridique ou archivage.</p></details></div></section>
+    </main>
+    <footer class="site-footer shell"><a class="brand" href="/">compresser<span class="brand-light"> pdf</span></a><p>Des fichiers légers. Tout simplement.</p><div><a href="/privacy.html">Confidentialité</a><a href="/guides/compress-pdf-without-losing-quality.html">Guide PDF</a></div></footer>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
