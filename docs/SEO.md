@@ -1,5 +1,13 @@
 # SEO implementation and open-source research
 
+## AITDK formula alignment — 2026-10-20
+
+The user identified AITDK. The installed Chrome extension 3.0.0 and its current public panel (`https://extension.aitdk.com/`, asset `assets/index-5fb206de.js`) were inspected read-only. Its two-word density is **phrase count / full-body whitespace word count × 100**, with no phrase-length multiplier. It traverses body text nodes excluding scripts, SVG, controls such as input/select and other non-content elements; includes collapsed FAQ answers and conditional tool text. It strips punctuation, excludes numeric tokens from phrase formation, and filters stop words for single words only. Thus `compresser un pdf` is not counted as `compresser pdf` in the two-word report.
+
+The previous live homepage measured 22 / 1,502 = 1.46% under that algorithm. The revised French copy retains all 15 useful FAQ topics, shortens repeated explanations and uses the actual product name in relevant questions and answers. No invisible keywords, new hidden content, meta-keyword stuffing or changes to compression/account behavior were added. The script now reports AITDK-equivalent full-body density first; editorial-only measurements remain separately labeled.
+
+Source and rendered default-page DOM independently match **40 / 1,293 = 3.09%**, within the requested 3–5% range. This is a reproduction of the inspected algorithm, not a screenshot or direct run of the extension panel. Counts can change with page state, extension updates or injected content. Build and twelve-page SEO/link tests passed; browser checks cover FAQ interaction and narrow-screen overflow.
+
 ## French keyword and intent update — 2026-10-20
 
 The French homepage now uses the core phrase `Compresser PDF` in its H1, introduction and description, with natural French forms such as `compresser un PDF` in question headings. Fifteen distinct FAQ entries cover free use vs download sign-in, 100/300/500 KB and 1 MB targets, email attachments, scans, already optimized files, phones, installation, confidentiality, selectable text/OCR, quality inspection, signed/encrypted files, large-file failures and batch processing. English FAQs are synchronized for product accuracy; French keywords are not inserted into English copy.
