@@ -1,5 +1,13 @@
 # SEO implementation and open-source research
 
+## French keyword and intent update — 2026-10-20
+
+The French homepage now uses the core phrase `Compresser PDF` in its H1, introduction and description, with natural French forms such as `compresser un PDF` in question headings. Fifteen distinct FAQ entries cover free use vs download sign-in, 100/300/500 KB and 1 MB targets, email attachments, scans, already optimized files, phones, installation, confidentiality, selectable text/OCR, quality inspection, signed/encrypted files, large-file failures and batch processing. English FAQs are synchronized for product accuracy; French keywords are not inserted into English copy.
+
+Intent evidence checked live on 2026-10-20: Google results for `compresser pdf questions taille qualité 100 ko` showed related searches for 100/300/500 Ko, 1 Mo and free/no-registration usage. The public [PDF24 FAQ](https://tools.pdf24.org/fr/compresser-pdf) independently lists quality, large files and compression-effectiveness questions; its published testimonial mentions email attachment size. These are public intent signals, not our own user interviews, Search Console data or verified keyword volumes. Wording is original and answers describe this project's actual capabilities, not the competitor's cloud processing or account requirements.
+
+Reproduce the source-text measurement with `node scripts/keyword-audit.mjs`. Scope includes French editorial text and crawlable collapsed FAQ answers; excludes metadata, navigation/footer, and conditional tool states. At this change: 1,288 words, 20 exact phrase occurrences, 1.55% occurrence frequency (`20 / 1288`), or 3.11% two-word coverage (`20 × 2 / 1288`). Including natural French variants yields 34 occurrences / 2.64% occurrence frequency. These formulas are not interchangeable; do not describe 3.11% coverage as 3.11% phrase frequency. Browser tokenization and third-party extraction may differ. The user's detector was requested to align the definition; no tool-specific 3–5% score or ranking improvement has been verified.
+
 ## Trust and citable content update — 2026-10-20
 
 Homepage follow-up: both homepages now show the technical citations directly, replace mode cards with a native HTML comparison table (caption, column headers and row headers), and lead mode choice, steps, privacy and quality sections with direct answers. On narrow screens the table scrolls inside its focusable region; desktop/390px/320px checks confirm no page overflow. A third-party content score has not been rerun and no specific score is promised.
