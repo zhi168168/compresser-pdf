@@ -81,7 +81,7 @@ export function initAuth() {
       <p class="account-eyebrow">COMPRESSER PDF</p><h2 id="account-title">${titles[view]}</h2>
       <p class="account-intro">${view === 'account' ? 'Account settings are separate from your files.' : 'An account is optional. PDF compression always happens on your device.'}</p>
       ${view === 'account' ? `<p class="account-identity">${escape(user?.name || '')}<br><span>${escape(user?.email || '')}</span></p><button class="account-primary" data-account-logout>Sign out</button>` : `
-      ${['login', 'register'].includes(view) ? `<button type="button" class="account-google" data-account-google ${config?.google ? '' : 'disabled'}><span aria-hidden="true">G</span> Continue with Google</button>${config && !config.google ? '<p class="account-help">Google sign-in is not configured yet.</p>' : ''}<div class="account-divider">or use email</div>` : ''}
+      ${['login', 'register'].includes(view) ? `<button type="button" class="account-google" data-account-google ${config?.google ? '' : 'disabled'}><img class="account-google-icon" src="/google-g.svg" width="20" height="20" alt="" aria-hidden="true"> Continue with Google</button>${config && !config.google ? '<p class="account-help">Google sign-in is not configured yet.</p>' : ''}<div class="account-divider">or use email</div>` : ''}
       <form class="account-form">
         ${view === 'register' ? '<label>Name<input name="name" autocomplete="name" maxlength="100" required></label>' : ''}
         ${view !== 'reset' ? '<label>Email address<input name="email" type="email" autocomplete="email" maxlength="254" required></label>' : ''}
