@@ -2,6 +2,20 @@
   "framework": "vite",
   "buildCommand": "pnpm build",
   "outputDirectory": "dist",
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.compresser-pdf.com" }],
+      "destination": "https://compresser-pdf.com/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "compresser-pdf.vercel.app" }],
+      "destination": "https://compresser-pdf.com/:path*",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     { "source": "/api/auth/:path*", "destination": "/api/account?__authPath=:path*" }
   ],
