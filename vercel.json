@@ -5,12 +5,6 @@
   "redirects": [
     {
       "source": "/:path*",
-      "has": [{ "type": "host", "value": "www.compresser-pdf.com" }],
-      "destination": "https://compresser-pdf.com/:path*",
-      "permanent": true
-    },
-    {
-      "source": "/:path*",
       "has": [{ "type": "host", "value": "compresser-pdf.vercel.app" }],
       "destination": "https://compresser-pdf.com/:path*",
       "permanent": true
