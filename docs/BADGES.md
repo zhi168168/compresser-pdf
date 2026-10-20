@@ -14,4 +14,6 @@
 
 首次初始化：在显式加载生产环境的终端运行 `node --env-file=.env.local scripts/init-badges.mjs`。创建独立的 `site_badges`、`site_badge_admin`、`site_badge_sessions`、`site_badge_attempts` 表，导入原有五个徽章；重复运行不会覆盖线上配置或重设密码。初始化不在构建或请求中自动运行。Preview 环境应继续与生产数据库隔离。
 
+本地 Vite 开发和预览使用 `public/badge-defaults.json` 提供只读徽章接口，不连接线上配置数据库；管理写入明确禁用。实际管理请使用已部署的正式入口。测试使用隔离数据库和浏览器接口夹具，不会修改线上徽章。
+
 管理页面始终 noindex、不进入 sitemap，响应禁止缓存。公开配置最多缓存 30 秒。配置服务暂时故障时，已加载的页面保留上一次显示内容；新打开的页面使用构建时的原有五个徽章作为回退，因此维护时应以服务恢复后的动态配置为准。

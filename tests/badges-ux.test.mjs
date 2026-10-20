@@ -5,6 +5,16 @@ import { readFile } from 'node:fs/promises';
 
 const base = process.env.TEST_URL || 'http://localhost:5178';
 const defaults = JSON.parse(await readFile(new URL('../public/badge-defaults.json', import.meta.url), 'utf8'));
+test('local badge requests return JSON without exposing or transforming the server function', async () => {
+  const response = await fetch(base + '/api/badges');
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get('content-type'), /application\/json/);
+  assert.equal((await response.json()).badges.length, defaults.length);
+  const admin = await fetch(base + '/api/badges?admin=1');
+  assert.equal(admin.status, 503);
+  assert.match((await admin.json()).message, /本地预览/);
+});
+
 test('badge manager parses inert HTML, preserves drafts, publishes order/visibility and updates both languages', async () => {
   const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });
   try {
