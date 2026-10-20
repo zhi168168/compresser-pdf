@@ -14,7 +14,7 @@ test('French-first workflow, localized errors/results/account states, and an exp
     page.on('request', request => requests.push({ url: request.url(), method: request.method() }));
     await page.goto(origin + '/');
     assert.equal(await page.locator('html').getAttribute('lang'), 'fr');
-    assert.match(await page.locator('h1').innerText(), /Compresser un PDF/);
+    assert.match(await page.locator('h1').innerText(), /Compresser PDF/);
     await page.getByRole('button', { name: 'Se connecter', exact: true }).click();
     await page.locator('.account-dialog').waitFor({ state: 'visible' });
     assert.match(await page.locator('.account-dialog').innerText(), /Google/);

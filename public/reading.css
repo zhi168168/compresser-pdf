@@ -16,3 +16,5 @@ th,td{padding:14px 12px;border:1px solid #dce2d8;vertical-align:top}
 thead{background:#e9eee5}tbody th{font-weight:600}
 .table-scroll:focus-visible{outline:3px solid #718b4b;outline-offset:4px}
 p a,li a{overflow-wrap:anywhere}
+
+.brand-logo{display:block;width:218px;height:auto;max-width:100%}footer .brand-logo{width:190px}@media(max-width:600px){header .brand-logo{width:164px}footer .brand-logo{width:174px}}

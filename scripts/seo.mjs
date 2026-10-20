@@ -83,9 +83,11 @@ for (const file of pages) {
     );
     for (const [lang, alternate] of Object.entries(alternatePaths)) meta.push(`<link rel="alternate" hreflang="${lang}" href="${escape(new URL(alternate, origin).href)}">`);
     const author = { '@type': 'Person', '@id': origin + '/about.html#alan', name: 'Alan', url: origin + (language === 'en' ? '/en' : '') + '/about.html' };
-    const responsibility = { author, publisher: author, ...(dateModified ? { dateModified } : {}) };
+    const publisher = { '@id': origin + '/#organization' };
+    const responsibility = { author, publisher, ...(dateModified ? { dateModified } : {}) };
     const graph = frenchPath === '/' ? [
-      { '@type': 'WebSite', '@id': origin + '/#website', name: 'compresser pdf', url: origin + '/', inLanguage: ['fr', 'en'], publisher: author },
+      { '@type': 'Organization', '@id': origin + '/#organization', name: 'compresser pdf', url: origin + '/', logo: { '@type': 'ImageObject', '@id': origin + '/#logo', url: origin + '/brand/logo-square.png', contentUrl: origin + '/brand/logo-square.png', width: 512, height: 512, caption: 'compresser pdf' } },
+      { '@type': 'WebSite', '@id': origin + '/#website', name: 'compresser pdf', url: origin + '/', inLanguage: ['fr', 'en'], publisher },
       { '@type': 'WebApplication', '@id': canonical + '#app', name: 'compresser pdf', url: canonical, inLanguage: language, applicationCategory: 'UtilitiesApplication', operatingSystem: 'Any modern web browser', browserRequirements: 'Requires JavaScript and Web Workers; image compression requires OffscreenCanvas', description, isAccessibleForFree: true },
       { '@type': 'WebPage', '@id': canonical + '#page', name: title, url: canonical, inLanguage: language, ...responsibility },
     ] : [{ '@type': frenchPath.startsWith('/guides/') ? 'Article' : frenchPath === '/about.html' ? 'AboutPage' : frenchPath === '/contact.html' ? 'ContactPage' : 'WebPage', '@id': canonical + '#page', name: title, ...(frenchPath.startsWith('/guides/') ? { headline: title, citation: ['https://pdf-lib.js.org/docs/api/classes/pdfdocument#save', 'https://developer.mozilla.org/en-US/docs/Web/API/OffscreenCanvas/convertToBlob'] } : {}), description, url: canonical, inLanguage: language, ...responsibility, isPartOf: { '@id': origin + '/#website' } }];

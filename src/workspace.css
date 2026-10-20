@@ -27,6 +27,7 @@ button, a, [role="button"], summary { touch-action: manipulation; }
 .brand { display: inline-flex; align-items: center; gap: 10px; font-size: 22px; font-weight: 750; letter-spacing: -.8px; white-space: nowrap; }
 .brand-light { font-weight: 400; }
 .brand-mark { width: 26px; height: 30px; color: var(--green); }
+.brand-logo { display: block; width: 218px; height: auto; max-width: 100%; }
 .site-header nav { margin-left: auto; display: flex; align-items: center; gap: 24px; color: var(--muted); font-size: 13px; font-weight: 550; }
 .site-header nav a { padding-block: 14px; }
 .site-header nav a:hover, .inline-link:hover { color: var(--green); }
@@ -175,6 +176,7 @@ h3 { font-size: 18px; line-height: 1.5; font-weight: 600; letter-spacing: -.3px;
 .faq-list p { font-size: 14px; line-height: 1.85; color: var(--muted); margin-top: 13px; padding-right: 20px; }
 .site-footer { display: flex; align-items: center; flex-wrap: wrap; gap: 24px; padding-block: 28px; border-top: 1px solid var(--border); }
 .site-footer .brand { font-size: 19px; gap: 0; }
+.site-footer .brand-logo { width: 190px; }
 .site-footer > p { font-size: 13px; color: var(--muted); }
 .site-footer > div { display: flex; flex-wrap: wrap; gap: 16px 24px; margin-left: auto; font-size: 13px; color: var(--muted); }
 .faq-list .content-credit { font-size: 12px; line-height: 1.8; color: var(--muted); margin-top: 24px; }
@@ -280,3 +282,5 @@ h3 { font-size: 18px; line-height: 1.5; font-weight: 600; letter-spacing: -.3px;
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
 }
+
+@media(max-width:600px){.brand-logo{width:174px}.site-footer .brand-logo{width:174px}}

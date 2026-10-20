@@ -34,6 +34,27 @@ function structuredData(html) {
     .map(match => JSON.parse(match[1]));
 }
 
+test('brand assets are square, crawlable local files and referenced on every page', async () => {
+  for (const [path, size] of [['favicon-48.png', 48], ['favicon-96.png', 96], ['favicon-144.png', 144], ['apple-touch-icon.png', 180], ['icon-192.png', 192], ['icon-512.png', 512], ['brand/logo-square.png', 512]]) {
+    const png = await readFile(join(dist, path));
+    assert.equal(png.subarray(0, 8).toString('hex'), '89504e470d0a1a0a', path);
+    assert.equal(png.readUInt32BE(16), size, path);
+    assert.equal(png.readUInt32BE(20), size, path);
+  }
+  const ico = await readFile(join(dist, 'favicon.ico'));
+  assert.equal(ico.readUInt16LE(2), 1);
+  assert.equal(ico.readUInt16LE(4), 3);
+  const manifest = JSON.parse(await readFile(join(dist, 'site.webmanifest'), 'utf8'));
+  for (const icon of manifest.icons) await access(join(dist, icon.src.slice(1)));
+  for (const { path, html } of await builtPages()) {
+    assert.match(html, /rel="icon"[^>]*href="\/favicon-96.png"/, path);
+    assert.match(html, /rel="apple-touch-icon"/, path);
+    assert.match(html, /rel="manifest"/, path);
+    assert.equal((html.match(/class="brand-logo"/g) || []).length, 2, path);
+    assert.doesNotMatch(html, /favicon\.svg|<svg class="brand-mark"/, path);
+  }
+});
+
 test('twelve built pages have unique metadata, one H1, French/English language and parseable JSON-LD', async () => {
   const pages = await builtPages();
   assert.deepEqual(pages.map(page => page.path), expected, 'Run npm run build before this test.');
@@ -123,8 +144,12 @@ test('SEO postbuild handles production, preview and missing domain in an isolate
         assert.ok(!page.datePublished, 'Do not invent an original publication date');
       }
       assert.ok(graph.every(item => item.url?.startsWith(origin)));
-      for (const item of graph) assert.deepEqual(item.inLanguage, item['@type'] === 'WebSite' ? ['fr', 'en'] : languageOf(path));
+      for (const item of graph.filter(item => item['@type'] !== 'Organization')) assert.deepEqual(item.inLanguage, item['@type'] === 'WebSite' ? ['fr', 'en'] : languageOf(path));
       if (frenchPath === '/') {
+        const organization = graph.find(item => item['@type'] === 'Organization');
+        assert.equal(organization.logo.url, origin + '/brand/logo-square.png');
+        assert.equal(organization.logo.width, 512);
+        assert.equal(page.publisher['@id'], organization['@id']);
         const app = graph.find(item => item['@type'] === 'WebApplication');
         assert.equal(app.url, expectedUrl);
         assert.equal(app['@id'], expectedUrl + '#app');
