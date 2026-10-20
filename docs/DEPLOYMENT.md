@@ -88,6 +88,6 @@ Google Cloud Console 创建 OAuth Web application，配置同意屏幕。若正�
 4. 真实 Google 登录和 HTTPS Cookie 正常；跨来源和频繁失败登录被限制。
 5. Network 检查选择、压缩、预览、下载不上传 PDF，账号请求不携带文件名或预览。
 6. 监控账号错误、SMTP 和 Neon 配额，屏蔽 token、Cookie、密码、邮件链接查询及连接串。
-7. 实际恢复一次备份；提供账户删除申请渠道、隐私联系方式和保留期限，当前无自助删除界面。
+7. 根据 [OPERATIONS.md](OPERATIONS.md) 启用每日加密备份并做隔离恢复演练；根据 [MONITORING.md](MONITORING.md) 创建外部监控。验证「我的账户」中的邮件确认删除流程和隐私联系方式。
 
 CI 通过不等于真实服务已联调。GitHub Actions 只测试/构建，不持有部署或数据库密钥；连接 GitHub 后由 Vercel 自动部署。

@@ -1,9 +1,10 @@
 import { timingSafeEqual } from 'node:crypto';
 import { isIP } from 'node:net';
 import { toNodeHandler } from 'better-auth/node';
+import { logOperationalEvent } from './observability.js';
 
 export const MAX_ACCOUNT_BODY = 16384;
-export const capabilities = config => ({ configured: Boolean(config), google: Boolean(config?.googleEnabled), emailRegistration: Boolean(config?.emailEnabled), passwordReset: Boolean(config?.emailEnabled) });
+export const capabilities = config => ({ configured: Boolean(config), google: Boolean(config?.googleEnabled), emailRegistration: Boolean(config?.emailEnabled), passwordReset: Boolean(config?.emailEnabled), accountDeletion: Boolean(config?.emailEnabled) });
 export function reply(res, status, data) {
   res.statusCode = status;
   res.setHeader('Content-Type', 'application/json');
@@ -42,7 +43,7 @@ export function createAccountHandler(config, auth, pool, { vercel = false } = {}
         if (Buffer.byteLength(body) > MAX_ACCOUNT_BODY) return reply(res, 413, { message: 'Request too large' });
         try { req.body = JSON.parse(body.toString()); } catch { return reply(res, 400, { message: 'Invalid JSON' }); }
         if (!req.body || typeof req.body !== 'object' || Array.isArray(req.body)) return reply(res, 400, { message: 'JSON object required' });
-        if (!config.emailEnabled && ['/api/auth/sign-up/email', '/api/auth/request-password-reset', '/api/auth/send-verification-email'].includes(path)) return reply(res, 503, { message: 'Email delivery is not configured. Please try Google sign-in if available.' });
+        if (!config.emailEnabled && ['/api/auth/sign-up/email', '/api/auth/request-password-reset', '/api/auth/send-verification-email', '/api/auth/delete-user'].includes(path)) return reply(res, 503, { message: 'Email delivery is not configured. Please try Google sign-in if available.' });
       }
       let clientIP = req.socket?.remoteAddress || '127.0.0.1';
       if (vercel) {
@@ -63,7 +64,9 @@ export function createAccountHandler(config, auth, pool, { vercel = false } = {}
       req.headers['x-forwarded-host'] = site.host;
       req.headers['x-forwarded-proto'] = site.protocol.slice(0, -1);
       await handler(req, res);
+      if (res.statusCode >= 500) logOperationalEvent('auth_server_error');
     } catch {
+      logOperationalEvent('auth_server_error');
       if (!res.headersSent) reply(res, 503, { message: 'Account service is temporarily unavailable' });
       else res.end();
     }

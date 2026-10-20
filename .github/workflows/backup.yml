@@ -1,0 +1,49 @@
+name: Encrypted account backup
+
+on:
+  schedule:
+    - cron: '23 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: account-backup
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    if: github.event_name == 'workflow_dispatch' || vars.ACCOUNT_BACKUPS_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Require configured secrets
+        env:
+          DB_BACKUP_URL: ${{ secrets.DB_BACKUP_URL }}
+          BACKUP_ENCRYPTION_KEY: ${{ secrets.BACKUP_ENCRYPTION_KEY }}
+        run: |
+          if [ -z "$DB_BACKUP_URL" ] || [ -z "$BACKUP_ENCRYPTION_KEY" ]; then
+            echo 'Backup is not active: configure DB_BACKUP_URL and BACKUP_ENCRYPTION_KEY repository secrets.'
+            exit 1
+          fi
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.19.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: Create encrypted snapshot
+        env:
+          DB_BACKUP_URL: ${{ secrets.DB_BACKUP_URL }}
+          BACKUP_ENCRYPTION_KEY: ${{ secrets.BACKUP_ENCRYPTION_KEY }}
+        run: node scripts/backup.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: encrypted-account-backup-${{ github.run_id }}
+          path: .local/backups/*.enc
+          retention-days: 7
+          if-no-files-found: error

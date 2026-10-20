@@ -17,6 +17,18 @@ const frenchAccountCopy = {
   'Use at least 8 characters.': 'Utilisez au moins 8 caractères.', 'Create account': 'Créer un compte',
   'Confirm password': 'Confirmer le mot de passe',
   'Passwords do not match.': 'Les mots de passe ne correspondent pas.',
+  'Delete account': 'Supprimer le compte',
+  'Before deleting your account': 'Avant de supprimer votre compte',
+  'Deleting your account permanently removes your profile, linked sign-ins and all active sessions. This does not delete your Google account or files on your device.': 'La suppression efface définitivement votre profil, vos connexions associées et toutes vos sessions actives. Elle ne supprime ni votre compte Google ni les fichiers de votre appareil.',
+  'We will email a confirmation link valid for one hour. Open it in this browser while still signed in. Nothing is deleted until you confirm.': 'Nous vous enverrons un lien de confirmation valable une heure. Ouvrez-le dans ce navigateur en restant connecté. Rien ne sera supprimé avant votre confirmation.',
+  'Type DELETE to continue': 'Saisissez SUPPRIMER pour continuer',
+  'Enter DELETE exactly to request the confirmation email.': 'Saisissez exactement SUPPRIMER pour demander l’e-mail de confirmation.',
+  'Send deletion confirmation': 'Envoyer la confirmation de suppression',
+  'Cancel and return to account': 'Annuler et revenir au compte',
+  'Check your inbox. Open the deletion link in this browser while still signed in. You can ignore the email to keep your account.': 'Consultez votre messagerie. Ouvrez le lien de suppression dans ce navigateur en restant connecté. Ignorez cet e-mail si vous souhaitez conserver votre compte.',
+  'Your account has been deleted. You can still compress PDFs without an account.': 'Votre compte a été supprimé. Vous pouvez toujours compresser vos PDF sans compte.',
+  'For account or privacy help, contact': 'Pour toute question sur votre compte ou vos données, contactez',
+  'Account deletion is temporarily unavailable. Contact us for help.': 'La suppression du compte est temporairement indisponible. Contactez-nous pour obtenir de l’aide.',
   'Send reset link': 'Envoyer le lien', 'Update password': 'Modifier le mot de passe',
   'Forgot password?': 'Mot de passe oublié ?', 'Back to sign in': 'Retour à la connexion',
   'Only account details go to our account service. Your PDFs stay in your browser.': 'Seules les informations de compte sont envoyées à notre service. Vos PDF restent dans votre navigateur.',
@@ -49,9 +61,9 @@ export function initAuth() {
   dialog.className = 'account-dialog';
   dialog.setAttribute('aria-labelledby', 'account-title');
   document.body.append(dialog);
-  let view = 'login', config = null, user = null, busy = false, configurationError = '';
+  let view = 'login', config = null, user = null, busy = false, configurationError = '', deletionEmailSent = false;
   const unavailableMessage = 'Accounts are not configured yet. You can still compress PDFs for free without an account.';
-  const submissionDisabled = () => !config?.configured || (view === 'register' && !config.emailRegistration) || (view === 'forgot' && !config.passwordReset);
+  const submissionDisabled = () => !config?.configured || (view === 'register' && !config.emailRegistration) || (view === 'forgot' && !config.passwordReset) || (view === 'delete' && (!config.accountDeletion || deletionEmailSent));
   const escape = value => String(value).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const query = new URLSearchParams(location.search);
   const resetToken = query.get('token');
@@ -78,11 +90,16 @@ export function initAuth() {
     document.querySelectorAll('[data-auth-open]').forEach(button => { button.textContent = t(user ? 'My account' : 'Sign in'); });
   }
   function render() {
-    const titles = { login: 'Welcome back', register: 'Create an account', forgot: 'Reset your password', reset: 'Choose a new password', account: 'Your account' };
+    const titles = { login: 'Welcome back', register: 'Create an account', forgot: 'Reset your password', reset: 'Choose a new password', account: 'Your account', delete: 'Before deleting your account' };
     dialog.innerHTML = `<button type="button" class="account-close" aria-label="Close account dialog">×</button>
       <p class="account-eyebrow">COMPRESSER PDF</p><h2 id="account-title">${titles[view]}</h2>
       <p class="account-intro">${view === 'account' ? 'Account settings are separate from your files.' : 'An account is optional. PDF compression always happens on your device.'}</p>
-      ${view === 'account' ? `<p class="account-identity">${escape(user?.name || '')}<br><span>${escape(user?.email || '')}</span></p><button type="button" class="account-signout" data-account-logout>Sign out</button>` : `
+      ${view === 'account' ? `<p class="account-identity">${escape(user?.name || '')}<br><span>${escape(user?.email || '')}</span></p><div class="account-actions"><button type="button" class="account-signout" data-account-logout>Sign out</button><button type="button" class="account-delete-link" data-account-view="delete">Delete account</button></div><p class="account-help">For account or privacy help, contact <a href="mailto:zhihaosong168@gmail.com">zhihaosong168@gmail.com</a></p>` : view === 'delete' ? `
+      <p class="account-help">Deleting your account permanently removes your profile, linked sign-ins and all active sessions. This does not delete your Google account or files on your device.</p>
+      <p class="account-help">We will email a confirmation link valid for one hour. Open it in this browser while still signed in. Nothing is deleted until you confirm.</p>
+      <form class="account-form"><label>Type DELETE to continue<input name="deleteConfirmation" autocomplete="off" maxlength="20" required></label><button class="account-delete-confirm" type="submit" ${submissionDisabled() ? 'disabled' : ''}>Send deletion confirmation</button></form>
+      <div class="account-links"><button type="button" data-account-view="account">Cancel and return to account</button></div>
+      <p class="account-help">For account or privacy help, contact <a href="mailto:zhihaosong168@gmail.com">zhihaosong168@gmail.com</a></p>` : `
       ${['login', 'register'].includes(view) ? `<button type="button" class="account-google" data-account-google ${config?.google ? '' : 'disabled'}><img class="account-google-icon" src="/google-g.svg" width="20" height="20" alt="" aria-hidden="true"> Continue with Google</button>${config && !config.google ? '<p class="account-help">Google sign-in is not configured yet.</p>' : ''}<div class="account-divider">or use email</div>` : ''}
       <form class="account-form">
         ${view === 'register' ? '<label>Name<input name="name" autocomplete="name" maxlength="100" required></label>' : ''}
@@ -101,7 +118,7 @@ export function initAuth() {
     }
     dialog.querySelectorAll('[aria-label]').forEach(element => element.setAttribute('aria-label', t(element.getAttribute('aria-label'))));
     dialog.querySelector('.account-close').onclick = () => dialog.close();
-    dialog.querySelectorAll('[data-account-view]').forEach(button => button.onclick = () => { view = button.dataset.accountView; render(); });
+    dialog.querySelectorAll('[data-account-view]').forEach(button => button.onclick = () => { view = button.dataset.accountView; deletionEmailSent = false; render(); });
     dialog.querySelector('[data-account-google]')?.addEventListener('click', () => action(async () => {
       const result = await api('sign-in/social', { provider: 'google', callbackURL, errorCallbackURL: `${callbackURL}?account=error` });
       if (!result.url) throw new Error('Google sign-in did not return an authorization URL.');
@@ -113,6 +130,11 @@ export function initAuth() {
     dialog.querySelector('form')?.addEventListener('submit', event => {
       event.preventDefault();
       const data = Object.fromEntries(new FormData(event.currentTarget));
+      if (view === 'delete' && data.deleteConfirmation !== (locale === 'fr' ? 'SUPPRIMER' : 'DELETE')) {
+        status('Enter DELETE exactly to request the confirmation email.', true);
+        event.currentTarget.elements.deleteConfirmation.focus();
+        return;
+      }
       if (view === 'register') {
         if (data.password !== data.confirmPassword) {
           status('Passwords do not match.', true);
@@ -122,7 +144,11 @@ export function initAuth() {
         delete data.confirmPassword;
       }
       action(async () => {
-        if (view === 'login') {
+        if (view === 'delete') {
+          await api('delete-user', { callbackURL: `${callbackURL}?account=deleted` });
+          deletionEmailSent = true;
+          status('Check your inbox. Open the deletion link in this browser while still signed in. You can ignore the email to keep your account.');
+        } else if (view === 'login') {
           try { await api('sign-in/email', data); } catch (error) {
             if (error.status === 429) throw error;
             throw new Error('Unable to sign in. Check your email and password, and verify your email before signing in.');
@@ -143,6 +169,7 @@ export function initAuth() {
     });
     if (config && !config.configured) status(unavailableMessage);
     else if (configurationError) status(configurationError, true);
+    else if (config && view === 'delete' && !config.accountDeletion) status('Account deletion is temporarily unavailable. Contact us for help.', true);
     else if (config && !config.emailRegistration && ['register', 'forgot'].includes(view)) status('Email delivery is not configured yet. Please use Google sign-in if available.', true);
   }
   async function action(fn) {
@@ -177,10 +204,11 @@ export function initAuth() {
       api('get-session').then(session => { user = session?.user || null; updateTriggers(); }).catch(() => {});
     }
   }).catch(error => { configurationError = frenchAccountCopy[error.message] ? error.message : unavailableMessage; if (dialog.open) render(); });
-  if (isReset || query.get('account') === 'error' || query.get('account') === 'verified') {
+  if (isReset || ['error', 'verified', 'deleted'].includes(query.get('account'))) {
     open().then(() => {
       if (!config?.configured) return;
       if (isReset) { view = 'reset'; render(); if (!resetToken) status('Your reset link is invalid or expired. Request a new link.', true); }
+      else if (query.get('account') === 'deleted') status('Your account has been deleted. You can still compress PDFs without an account.');
       else status(query.get('account') === 'verified' ? 'Email verified. You can now sign in.' : 'Sign-in could not be completed. Please try again.', query.get('account') === 'error');
     });
   }

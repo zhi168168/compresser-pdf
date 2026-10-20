@@ -16,7 +16,7 @@ test('unconfigured and partially configured accounts fail closed without disclos
     const base = await serve(t, createVercelHandler({ env: partial, createRuntime() { throw new Error('must not create runtime'); } }));
     const config = await fetch(`${base}/api/auth/config`);
     assert.equal(config.status, 200);
-    assert.deepEqual(await config.json(), { configured: false, google: false, emailRegistration: false, passwordReset: false });
+    assert.deepEqual(await config.json(), { configured: false, google: false, emailRegistration: false, passwordReset: false, accountDeletion: false });
     const login = await fetch(`${base}/api/auth/sign-in/email`, { method: 'POST' });
     assert.equal(login.status, 503); assert.doesNotMatch(await login.text(), /secret-test|secret-smtp|DATABASE_URL/);
     assert.equal(login.headers.get('cache-control'), 'no-store');
@@ -48,4 +48,21 @@ test('only the Vercel runtime uses its verified ingress IP header; cookies and O
   const response = await fetch(`${base}/api/auth/callback/google?code=synthetic`, { redirect: 'manual', headers: { 'x-vercel-forwarded-for': '203.0.113.6', 'x-account-client-ip': 'spoofed' } });
   assert.equal(response.status, 302); assert.equal(response.headers.get('location'), `${env.PUBLIC_SITE_URL}/en/`);
   assert.equal(response.headers.getSetCookie().length, 2); assert.equal(response.headers.get('x-test-ip'), '203.0.113.6');
+});
+
+test('a transient initialization failure closes its pool and retries on the next request', async t => {
+  let starts = 0, closed = 0;
+  const handler = createVercelHandler({ env, createRuntime: () => {
+    starts++;
+    return { auth: { $context: starts === 1 ? Promise.reject(new Error('temporary startup failure')) : Promise.resolve({}), handler: async () => new Response('null', { headers: { 'content-type': 'application/json' } }) }, pool: { async end() { closed++; } } };
+  } });
+  const base = await serve(t, handler);
+  assert.equal((await fetch(`${base}/api/auth/config`)).status, 200);
+  assert.equal(starts, 0, 'Capabilities discovery should not wake the database');
+  assert.equal((await fetch(`${base}/api/auth/get-session`)).status, 503);
+  assert.equal(closed, 1);
+  const recovered = await fetch(`${base}/api/auth/get-session`);
+  assert.equal(recovered.status, 200);
+  assert.equal(await recovered.json(), null);
+  assert.equal(starts, 2);
 });

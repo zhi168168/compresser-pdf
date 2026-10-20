@@ -1,5 +1,13 @@
 # Verification — 2026-10-19
 
+## Operations update — 2026-10-20
+
+Root suite **17/17** and account suite **12/12** passed, including bilingual mobile deletion confirmation, protected email-token deletion against actual PostgreSQL, all-session invalidation, optional health authorization, private error logs, transient auth startup recovery, encrypted backup integrity and transactional restore refusal. Production build and six-page static SEO/link checks passed. No production user was deleted and no real deletion email was sent by these tests.
+
+A real read-only Neon account snapshot was encrypted locally, then decrypted only in memory and restored into an isolated temporary PGlite PostgreSQL instance using matching migrations. All user/account fields matched (timestamp representations normalized to equivalent instants); session/verification data was excluded. The source database was not modified. This proves a local restore drill, not a live Neon failover. The encrypted file and separate key configuration are in Git-ignored local paths. GitHub recurring backup and external availability notifications remain inactive until the operator completes their documented setup. No recurring cloud protection is claimed merely from passing tests.
+
+French and English privacy notices now identify Vercel/Neon/Brevo, explain deletion and conditional backup retention, and provide the user-authorized contact zhihaosong168@gmail.com. Mobile deletion/privacy layouts were checked for overflow. The new health endpoint must be checked on the deployed domain after release.
+
 ## Vercel + Neon deployment preparation
 
 The default account endpoint now runs directly in a Vercel Node Function, with a lazy shared PostgreSQL pool and no upstream account server requirement. Root tests **9/9** and account tests **9/9** passed. The new adapter checks include a real Better Auth register → verify → login → session → password reset → logout lifecycle, French/English captured mail, secure cookies, origin/body restrictions and warm-runtime reuse. The existing PostgreSQL-over-TCP migration/lifecycle test also passed. Production static build and six-page SEO validation passed. Live Neon, Vercel, Google OAuth and SMTP still require deployment configuration; these tests do not claim those external services were deployed.

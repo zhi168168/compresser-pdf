@@ -46,6 +46,12 @@ Follow [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for the complete Chinese deploym
 
 The independent Node service and [server/compose.yml](server/compose.yml) remain an optional self-hosted alternative. They are not required for the recommended Vercel + Neon setup.
 
+## Operations
+
+Users can delete their account after typed confirmation and a one-hour emailed verification link while signed in. The active profile, linked sign-ins and all sessions are removed; PDFs stay local. Privacy/contact information is available in both languages. The app emits only fixed error events, random IDs and timestamps.
+
+`GET /api/health` checks actual database connectivity without returning account data. [MONITORING.md](docs/MONITORING.md) explains external alert setup; it is not automatically provisioned. [OPERATIONS.md](docs/OPERATIONS.md) explains AES-256-GCM account backups, seven-day artifacts, explicit schedule activation and restoration into an empty isolated database. Configure Actions secrets and run a successful backup before enabling the schedule. No PDF, session or verification token is included in these backups. New billing tables will require an expanded backup strategy.
+
 ## Compression behavior
 
 - **Lossless:** PDF structural rewrite with object streams. No deliberate image pixel changes. This is not byte-identical output or a guarantee that metadata is removed.

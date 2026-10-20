@@ -22,8 +22,9 @@ test('HTTP API has real health status, fail-closed email, CSRF origin and body l
   const base = `http://127.0.0.1:${server.address().port}`;
   const post = (path, body, headers = {}) => fetch(`${base}${path}`, { method: 'POST', headers: { 'content-type': 'application/json', ...headers }, body: JSON.stringify(body) });
   assert.equal((await fetch(`${base}/healthz`)).status, 503);
-  assert.deepEqual(await (await fetch(`${base}/api/auth/config`)).json(), { configured: true, google: false, emailRegistration: false, passwordReset: false });
+  assert.deepEqual(await (await fetch(`${base}/api/auth/config`)).json(), { configured: true, google: false, emailRegistration: false, passwordReset: false, accountDeletion: false });
   assert.equal((await post('/api/auth/sign-up/email', { email: 'x@example.com' })).status, 503);
+  assert.equal((await post('/api/auth/delete-user', { callbackURL: env.PUBLIC_SITE_URL })).status, 503);
   assert.equal((await post('/api/auth/sign-in/email', {}, { origin: 'https://evil.example' })).status, 403);
   assert.equal((await post('/api/auth/sign-in/email', { payload: 'x'.repeat(17000) })).status, 413);
   const response = await post('/api/auth/sign-in/email', { email: 'x@example.com', password: 'test' });
