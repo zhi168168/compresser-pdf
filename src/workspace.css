@@ -284,3 +284,6 @@ h3 { font-size: 18px; line-height: 1.5; font-weight: 600; letter-spacing: -.3px;
 }
 
 @media(max-width:600px){.brand-logo{width:174px}.site-footer .brand-logo{width:174px}}
+
+.site-footer .directory-badge { display: inline-flex; flex: 0 0 auto; align-items: center; }
+.site-footer .directory-badge img { display: block; width: 139px; height: 20px; }
