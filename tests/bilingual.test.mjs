@@ -11,7 +11,7 @@ test('French-first workflow, localized errors/results/account states, and an exp
     const page = await browser.newPage({ viewport: { width: 1440, height: 1000 }, locale: 'en-US' });
     // Browser language must not force an English redirect away from the French page.
     const requests = [];
-    page.on('request', request => requests.push({ url: request.url(), method: request.method() }));
+    page.on('request', request => requests.push({ url: request.url(), method: request.method(), body: request.postData() || '' }));
     await page.goto(origin + '/');
     assert.equal(await page.locator('html').getAttribute('lang'), 'fr');
     assert.match(await page.locator('h1').innerText(), /Compresser PDF/);
@@ -37,7 +37,14 @@ test('French-first workflow, localized errors/results/account states, and an exp
     const result = await page.locator('#result-description').innerText();
     assert.match(result, /(?:page traitée|réduit la taille)/);
     assert(!/processed|smaller|Original kept/.test(await page.locator('#result-panel').innerText()));
-    assert(!requests.some(request => ['POST', 'PUT', 'PATCH'].includes(request.method)), 'No document upload');
+    const isAnalytics = request => {
+      const url = new URL(request.url);
+      return (url.hostname === 'google-analytics.com' || url.hostname.endsWith('.google-analytics.com')) && url.pathname === '/g/collect';
+    };
+    assert(!requests.some(request => ['POST', 'PUT', 'PATCH'].includes(request.method) && !isAnalytics(request)), 'No document upload');
+    for (const request of requests.filter(isAnalytics)) {
+      assert(!/document\.pdf|invalide\.pdf|%PDF-|application\/pdf/.test(decodeURIComponent(request.url + request.body)), 'Analytics must not contain PDF names or contents');
+    }
     assert(!requests.some(request => request.url.includes('document.pdf') || request.url.includes('invalide.pdf')));
     await page.locator('#start-over').click();
     await page.reload();
