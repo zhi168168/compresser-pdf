@@ -20,3 +20,5 @@ p a,li a{overflow-wrap:anywhere}
 .brand-logo{display:block;width:218px;height:auto;max-width:100%}footer .brand-logo{width:190px}@media(max-width:600px){header .brand-logo{width:164px}footer .brand-logo{width:174px}}
 
 footer .directory-badge{display:inline-flex;flex:0 0 auto;align-items:center}footer .directory-badge img{display:block;width:139px;height:20px}
+
+footer .findly-badge img{width:175px;height:55px}
