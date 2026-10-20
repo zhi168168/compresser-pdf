@@ -16,6 +16,10 @@ database tables. Use the manual account smoke test after releases as well.
 
 ## GitHub availability checks
 
+For the current repository, the schedule was enabled on 2026-10-20 after a
+successful manual check. No failed-workflow email delivery has been tested;
+confirm the operator's GitHub notification preferences as described below.
+
 The repository includes **Website availability** (`.github/workflows/monitor.yml`),
 checking the production homepage and database health approximately every 15 minutes.
 Activate it with Repository variable `AVAILABILITY_MONITOR_ENABLED=true`, then run
