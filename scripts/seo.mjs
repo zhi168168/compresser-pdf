@@ -13,6 +13,13 @@ if (configured) {
   origin = url.origin;
 }
 const production = Boolean(origin) && (!process.env.VERCEL_ENV || process.env.VERCEL_ENV === 'production');
+// Social crawlers support raster images more consistently than SVG.
+for (const language of ['fr', 'en']) {
+  const png = await readFile(resolve(root, `social-${language}.png`));
+  if (png.subarray(0, 8).toString('hex') !== '89504e470d0a1a0a' || png.readUInt32BE(16) !== 1200 || png.readUInt32BE(20) !== 630) {
+    throw new Error(`Social image social-${language}.png must be a 1200 × 630 PNG.`);
+  }
+}
 const escape = value => value.replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
 async function findHtml(dir) {
   const entries = await readdir(dir, { withFileTypes: true });
@@ -54,7 +61,7 @@ for (const file of pages) {
     '<meta property="og:site_name" content="compresser pdf">',
     `<meta property="og:locale" content="${language === 'fr' ? 'fr_FR' : 'en_US'}">`,
     `<meta property="og:locale:alternate" content="${language === 'fr' ? 'en_US' : 'fr_FR'}">`,
-    '<meta name="twitter:card" content="summary">',
+    `<meta name="twitter:card" content="${production ? 'summary_large_image' : 'summary'}">`,
     `<meta name="twitter:title" content="${escape(title)}">`,
     `<meta name="twitter:description" content="${escape(description)}">`,
     '<meta name="author" content="Alan">',
@@ -62,6 +69,18 @@ for (const file of pages) {
   if (dateModified) meta.push(`<meta property="article:modified_time" content="${dateModified}T00:00:00+08:00">`);
   if (production) {
     meta.push(`<link rel="canonical" href="${escape(canonical)}">`, `<meta property="og:url" content="${escape(canonical)}">`);
+    const image = escape(new URL(`/social-${language}.png`, origin).href);
+    const imageAlt = language === 'fr' ? 'compresser pdf — Un PDF plus léger, sur votre appareil. Aucun envoi de document.' : 'compresser pdf — A smaller PDF, on your device. No file uploads.';
+    meta.push(
+      `<meta property="og:image" content="${image}">`,
+      `<meta property="og:image:secure_url" content="${image}">`,
+      '<meta property="og:image:type" content="image/png">',
+      '<meta property="og:image:width" content="1200">',
+      '<meta property="og:image:height" content="630">',
+      `<meta property="og:image:alt" content="${escape(imageAlt)}">`,
+      `<meta name="twitter:image" content="${image}">`,
+      `<meta name="twitter:image:alt" content="${escape(imageAlt)}">`,
+    );
     for (const [lang, alternate] of Object.entries(alternatePaths)) meta.push(`<link rel="alternate" hreflang="${lang}" href="${escape(new URL(alternate, origin).href)}">`);
     const author = { '@type': 'Person', '@id': origin + '/about.html#alan', name: 'Alan', url: origin + (language === 'en' ? '/en' : '') + '/about.html' };
     const responsibility = { author, publisher: author, ...(dateModified ? { dateModified } : {}) };

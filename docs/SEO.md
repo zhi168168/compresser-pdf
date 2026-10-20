@@ -77,7 +77,9 @@ The postbuild script reads all twelve built HTML pages, checks the expected Fren
 - Homepage WebSite/WebApplication JSON-LD and WebPage data for other pages, with corresponding `inLanguage`; the shared WebSite lists both languages, and each homepage app uses its own URL and ID. No fabricated ratings or organizations.
 - XML sitemap of the twelve actual built HTML pages, including language alternate links. No fake dates or keyword pages.
 
-`public/social.svg` is a source illustration, deliberately not advertised as an OG image because social parsers do not consistently accept SVG. Add a real exported PNG before using `og:image`; the current text-only social metadata is intentional. No external font or image request is required by the reading pages.
+Social previews use `public/social-fr.png` and `public/social-en.png`, rasterized from the retained SVG sources at 1200 × 630. Production builds add language-specific absolute HTTPS `og:image`/`og:image:secure_url`, PNG MIME type, dimensions, localized alt text, and matching Twitter images with `summary_large_image`. All twelve pages use their language's brand card. Build-time PNG signature/dimension validation prevents publishing a missing or incorrect image; repeated builds replace generated metadata without duplicates. Preview/missing-origin builds keep noindex and do not publish guessed absolute image URLs. Images are referenced by metadata and do not add a visible page element or alter body keyword density.
+
+Verification on 2026-10-20: both PNGs visually inspected, production-configured fixture checked across twelve pages including a repeated SEO build, and existing SEO/link tests passed. Source illustrations are retained in `public/social.svg` (English) and `public/social-fr.svg` (French).
 
 ## Launch acceptance
 
