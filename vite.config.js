@@ -1,6 +1,9 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+  // Discover the worker-only dependency before the first upload; late dependency
+  // optimization can otherwise reload a page during a cold-start browser test.
+  optimizeDeps: { entries: ['index.html', 'en/index.html'], include: ['pdf-lib'] },
   worker: { format: 'es' },
   build: { rollupOptions: { input: { french: 'index.html', english: 'en/index.html' } } },
   plugins: [{
