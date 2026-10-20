@@ -14,7 +14,9 @@ const frenchAccountCopy = {
   'Sign out': 'Se déconnecter', 'Continue with Google': 'Continuer avec Google',
   'Google sign-in is not configured yet.': 'La connexion Google n’est pas encore disponible.',
   'or use email': 'ou par e-mail', 'Name': 'Nom', 'Email address': 'Adresse e-mail', 'Password': 'Mot de passe',
-  'Use at least 12 characters.': 'Utilisez au moins 12 caractères.', 'Create account': 'Créer un compte',
+  'Use at least 8 characters.': 'Utilisez au moins 8 caractères.', 'Create account': 'Créer un compte',
+  'Confirm password': 'Confirmer le mot de passe',
+  'Passwords do not match.': 'Les mots de passe ne correspondent pas.',
   'Send reset link': 'Envoyer le lien', 'Update password': 'Modifier le mot de passe',
   'Forgot password?': 'Mot de passe oublié ?', 'Back to sign in': 'Retour à la connexion',
   'Only account details go to our account service. Your PDFs stay in your browser.': 'Seules les informations de compte sont envoyées à notre service. Vos PDF restent dans votre navigateur.',
@@ -80,12 +82,13 @@ export function initAuth() {
     dialog.innerHTML = `<button type="button" class="account-close" aria-label="Close account dialog">×</button>
       <p class="account-eyebrow">COMPRESSER PDF</p><h2 id="account-title">${titles[view]}</h2>
       <p class="account-intro">${view === 'account' ? 'Account settings are separate from your files.' : 'An account is optional. PDF compression always happens on your device.'}</p>
-      ${view === 'account' ? `<p class="account-identity">${escape(user?.name || '')}<br><span>${escape(user?.email || '')}</span></p><button class="account-primary" data-account-logout>Sign out</button>` : `
+      ${view === 'account' ? `<p class="account-identity">${escape(user?.name || '')}<br><span>${escape(user?.email || '')}</span></p><button type="button" class="account-signout" data-account-logout>Sign out</button>` : `
       ${['login', 'register'].includes(view) ? `<button type="button" class="account-google" data-account-google ${config?.google ? '' : 'disabled'}><img class="account-google-icon" src="/google-g.svg" width="20" height="20" alt="" aria-hidden="true"> Continue with Google</button>${config && !config.google ? '<p class="account-help">Google sign-in is not configured yet.</p>' : ''}<div class="account-divider">or use email</div>` : ''}
       <form class="account-form">
         ${view === 'register' ? '<label>Name<input name="name" autocomplete="name" maxlength="100" required></label>' : ''}
         ${view !== 'reset' ? '<label>Email address<input name="email" type="email" autocomplete="email" maxlength="254" required></label>' : ''}
-        ${view !== 'forgot' ? `<label>Password<input name="password" type="password" autocomplete="${view === 'login' ? 'current-password' : 'new-password'}" ${view === 'login' ? '' : 'minlength="12"'} maxlength="128" required></label>${view !== 'login' ? '<p class="account-help">Use at least 12 characters.</p>' : ''}` : ''}
+        ${view !== 'forgot' ? `<label>Password<input name="password" type="password" autocomplete="${view === 'login' ? 'current-password' : 'new-password'}" ${view === 'login' ? '' : 'minlength="8"'} maxlength="128" required></label>${view !== 'login' ? '<p class="account-help">Use at least 8 characters.</p>' : ''}` : ''}
+        ${view === 'register' ? '<label>Confirm password<input name="confirmPassword" type="password" autocomplete="new-password" minlength="8" maxlength="128" required></label>' : ''}
         <button class="account-primary" type="submit" ${submissionDisabled() ? 'disabled' : ''}>${({ login: 'Sign in', register: 'Create account', forgot: 'Send reset link', reset: 'Update password' })[view]}</button>
       </form>
       <div class="account-links">${view === 'login' ? '<button type="button" data-account-view="forgot">Forgot password?</button><button type="button" data-account-view="register">Create an account</button>' : '<button type="button" data-account-view="login">Back to sign in</button>'}</div>`}
@@ -110,6 +113,14 @@ export function initAuth() {
     dialog.querySelector('form')?.addEventListener('submit', event => {
       event.preventDefault();
       const data = Object.fromEntries(new FormData(event.currentTarget));
+      if (view === 'register') {
+        if (data.password !== data.confirmPassword) {
+          status('Passwords do not match.', true);
+          event.currentTarget.elements.confirmPassword.focus();
+          return;
+        }
+        delete data.confirmPassword;
+      }
       action(async () => {
         if (view === 'login') {
           try { await api('sign-in/email', data); } catch (error) {

@@ -16,7 +16,7 @@ Migration is an explicit operator action, never part of a build, request handler
 
 Create a Google OAuth Web application and configure the consent screen. For site `https://compresser.example`, use JavaScript origin `https://compresser.example` and redirect URI `https://compresser.example/api/auth/callback/google`. Set both Google credentials server-side. The callback is on the website, not Neon. Do not trust arbitrary Preview domains. Account linking is disabled; preexisting users may need their original sign-in method.
 
-SMTP requires a real provider and validated sender. Port 587 uses STARTTLS; 465 implicit TLS. Configure SPF/DKIM/DMARC and test actual inbox and spam delivery. Passwords require 12 characters; email registration requires verification; password reset revokes existing sessions. UI and emails default to French, with English for requests from `/en/`. Mail locale is request-scoped and language return paths are preserved.
+SMTP requires a real provider and validated sender. Port 587 uses STARTTLS; 465 implicit TLS. Configure SPF/DKIM/DMARC and test actual inbox and spam delivery. Passwords require at least 8 characters; email registration requires verification; password reset revokes existing sessions. UI and emails default to French, with English for requests from `/en/`. Mail locale is request-scoped and language return paths are preserved.
 
 Cookies are host-only, HttpOnly, SameSite=Lax and Secure in production. Origin checks and database-backed rate limits are enabled. Only on Vercel infrastructure (`VERCEL=1`) does the Function use the platform client-IP header; outside it falls back to socket identity. Do not blindly trust arbitrary forwarded headers.
 

@@ -48,7 +48,8 @@ test('actual auth lifecycle: verified email, session, reset and logout (in-memor
     method: data ? 'POST' : 'GET', headers: { origin: env.PUBLIC_SITE_URL, ...(data ? { 'content-type': 'application/json' } : {}), ...(cookie ? { cookie } : {}) }, body: data ? JSON.stringify(data) : undefined,
   }));
   try {
-    const credentials = { email: 'test@example.com', password: 'a-strong-test-password', name: 'Test User' };
+    const credentials = { email: 'test@example.com', password: 'Test123!', name: 'Test User' };
+    assert.equal((await call('sign-up/email', { ...credentials, password: 'Test12!' })).status, 400);
     const signup = await call('sign-up/email', { ...credentials, callbackURL: 'http://localhost:5173/?account=verified' });
     assert.equal(signup.status, 200, await signup.text());
     assert.equal((await call('sign-in/email', credentials)).status, 403);
@@ -63,9 +64,9 @@ test('actual auth lifecycle: verified email, session, reset and logout (in-memor
     assert.equal(messages.length, 2);
     const resetURL = messages[1].text.match(/http:\/\/[^\s]+/)[0];
     const token = new URL(resetURL).pathname.split('/').pop();
-    assert.equal((await call('reset-password', { token, newPassword: 'another-strong-test-password' })).status, 200);
+    assert.equal((await call('reset-password', { token, newPassword: 'New1234!' })).status, 200);
     assert.equal((await call('sign-in/email', credentials)).status, 401);
-    assert.equal((await call('sign-in/email', { ...credentials, password: 'another-strong-test-password' })).status, 200);
+    assert.equal((await call('sign-in/email', { ...credentials, password: 'New1234!' })).status, 200);
     assert.equal((await call('sign-out', {}, cookie)).status, 200);
     assert.equal((await (await call('get-session', null, cookie)).json()), null);
   } finally { await pool.end(); }

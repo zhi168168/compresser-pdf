@@ -43,7 +43,7 @@ export function createAuth(config, testDependencies = {}) {
       ipAddress: { ipAddressHeaders: ['x-account-client-ip'] } },
     emailAndPassword: {
       enabled: true, disableSignUp: !config.emailEnabled, requireEmailVerification: true,
-      minPasswordLength: 12, maxPasswordLength: 128, revokeSessionsOnPasswordReset: true,
+      minPasswordLength: 8, maxPasswordLength: 128, revokeSessionsOnPasswordReset: true,
       ...(mailer ? { sendResetPassword: async ({ user, url }, request) => send(user.email, 'reset', url, request) } : {}),
     },
     emailVerification: {
