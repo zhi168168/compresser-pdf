@@ -14,7 +14,27 @@ This accommodates a sleeping Neon database without leaving an unbounded query.
 This check verifies availability, not account registration, mail delivery, or all
 database tables. Use the manual account smoke test after releases as well.
 
-## Operator setup (not automatically configured)
+## GitHub availability checks
+
+The repository includes **Website availability** (`.github/workflows/monitor.yml`),
+checking the production homepage and database health approximately every 15 minutes.
+Activate it with Repository variable `AVAILABILITY_MONITOR_ENABLED=true`, then run
+the workflow manually and confirm success. It retries a transient failure once.
+If `HEALTH_CHECK_TOKEN` is set on Vercel, set the same Actions Secret for the monitor.
+Successful checks do not send notifications from the application.
+
+In GitHub Settings → Notifications → Actions, enable email notifications for failed
+workflows and confirm the destination mailbox. No custom notification email is sent
+by this implementation. A passing monitor proves checks worked, not that an alert
+has reached the operator. Provider email notification preferences must be verified.
+
+GitHub schedules may be delayed or skipped and can be disabled after prolonged
+repository inactivity; inspect their latest success regularly. This is an initial
+availability check, not a continuous uptime SLA. Account for Actions usage if the
+repository becomes private. For more reliable independent alerts before paid launch,
+also use a dedicated uptime service as below.
+
+## Optional dedicated monitoring service
 
 Create an HTTPS monitor in UptimeRobot or another provider for the URL above.
 Start with a **15-minute interval**, HTTP 200 expected, and a timeout of at least
@@ -22,7 +42,7 @@ Start with a **15-minute interval**, HTTP 200 expected, and a timeout of at leas
 notifications. Use an email address you actually receive messages at. Create a
 second, inexpensive homepage monitor for `https://compresser-pdf.com/`.
 
-**No external monitoring service or notification subscription has been created by
+**No UptimeRobot account or dedicated notification subscription is created by
 the code.** The operator must create it and test an alert/recovery notification.
 Do not check the database endpoint every minute: every successful query wakes or
 keeps Neon compute active and consumes the free compute allowance. Even 15-minute

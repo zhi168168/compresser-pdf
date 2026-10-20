@@ -1,0 +1,44 @@
+name: Website availability
+
+on:
+  schedule:
+    - cron: '7,22,37,52 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: website-availability
+  cancel-in-progress: true
+
+jobs:
+  availability:
+    if: github.event_name == 'workflow_dispatch' || vars.AVAILABILITY_MONITOR_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Check homepage
+        shell: bash
+        run: |
+          status=$(curl --silent --show-error --retry 1 --retry-all-errors --retry-delay 10 --connect-timeout 10 --max-time 25 --output /dev/null --write-out '%{http_code}' https://compresser-pdf.com/)
+          if [ "$status" != '200' ]; then
+            echo 'Homepage availability check failed.'
+            exit 1
+          fi
+          echo 'Homepage is available.'
+      - name: Check database health
+        shell: bash
+        env:
+          HEALTH_CHECK_TOKEN: ${{ secrets.HEALTH_CHECK_TOKEN }}
+        run: |
+          args=()
+          if [ -n "$HEALTH_CHECK_TOKEN" ]; then
+            args+=(--header "Authorization: Bearer $HEALTH_CHECK_TOKEN")
+          fi
+          health=$(curl --fail --silent --show-error --retry 1 --retry-all-errors --retry-delay 10 --connect-timeout 10 --max-time 25 "${args[@]}" https://compresser-pdf.com/api/health)
+          if [ "$health" != '{"status":"ok"}' ]; then
+            echo 'Database health check failed.'
+            exit 1
+          fi
+          echo 'Database health is available.'
