@@ -50,6 +50,8 @@ The independent Node service and [server/compose.yml](server/compose.yml) remain
 
 ## Operations
 
+Footer badges can be managed at `/admin/badges.html` with a dedicated administrator password, without a frontend deployment. Paste a badge snippet, preview it, then save to publish across all French and English pages. Ordering, visibility, editing, deletion, image uploads, JSON export/import and password changes are supported. Run `node --env-file=.env.local scripts/init-badges.mjs` explicitly once to initialize the separate badge tables and import the existing five badges; it never overwrites existing settings. See [BADGES.md](docs/BADGES.md) for access, caching, backups and recovery behavior.
+
 Users can delete their account after typed confirmation and a one-hour emailed verification link while signed in. The active profile, linked sign-ins and all sessions are removed; PDFs stay local. Privacy/contact information is available in both languages. The app emits only fixed error events, random IDs and timestamps.
 
 `GET /api/health` checks actual database connectivity without returning account data. [MONITORING.md](docs/MONITORING.md) explains external alert setup; it is not automatically provisioned. [OPERATIONS.md](docs/OPERATIONS.md) explains AES-256-GCM account backups, seven-day artifacts, explicit schedule activation and restoration into an empty isolated database. Configure Actions secrets and run a successful backup before enabling the schedule. No PDF, session or verification token is included in these backups. New billing tables will require an expanded backup strategy.

@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex, nofollow"><title>页脚徽章管理 · compresser pdf</title><link rel="icon" href="/favicon.ico"><link rel="stylesheet" href="/admin/badges.css"><script src="/admin/badges.js" defer></script></head>
+<body><header><a href="/">compresser pdf</a><span>页脚徽章管理</span><a href="/" target="_blank" rel="noopener">查看网站 ↗</a></header>
+<main>
+<section id="login-panel"><h1>管理页脚徽章</h1><p>输入专用管理密码即可编辑，无需注册网站账号。</p><form id="login-form"><label for="password">管理密码</label><input id="password" type="password" autocomplete="current-password" required maxlength="256"><button type="submit">进入管理</button></form></section>
+<p id="message" role="status" aria-live="polite"></p>
+<section id="editor" hidden>
+<div class="heading"><div><h1>页脚徽章</h1><p>粘贴代码、预览、保存。法语和英语页面会同步更新，通常一分钟内生效。</p></div><button id="logout" class="secondary">退出管理</button></div>
+<section class="panel"><h2>添加徽章</h2><label for="snippet">粘贴对方提供的徽章 HTML 代码（可一次粘贴多个）</label><textarea id="snippet" rows="4" placeholder="&lt;a href=&quot;https://…&quot;&gt;&lt;img src=&quot;https://…&quot; width=&quot;175&quot; height=&quot;55&quot;&gt;&lt;/a&gt;"></textarea><button id="parse">解析并添加到草稿</button><p class="hint">只提取图片、链接、名称和尺寸，其他代码不会运行。添加后请点击“保存并发布”。</p></section>
+<div class="toolbar"><strong id="count"></strong><span id="dirty">已保存</span><button id="export" class="secondary">导出配置</button><label class="file-button">导入配置<input id="import" type="file" accept="application/json,.json"></label><button id="save">保存并发布</button></div>
+<div id="list"></div><p id="empty" hidden>暂无徽章。粘贴上方代码即可添加。</p>
+<section class="panel"><h2>修改管理密码</h2><form id="password-form"><label for="current-password">当前密码</label><input id="current-password" type="password" autocomplete="current-password" required maxlength="256"><label for="new-password">新密码（至少 12 位）</label><input id="new-password" type="password" autocomplete="new-password" required minlength="12" maxlength="256"><label for="confirm-password">确认新密码</label><input id="confirm-password" type="password" autocomplete="new-password" required minlength="12" maxlength="256"><button type="submit" class="secondary">修改密码并重新登录</button></form></section>
+</section></main></body></html>

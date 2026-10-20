@@ -1,0 +1,52 @@
+[
+  {
+    "id": "neeed",
+    "href": "https://neeed.directory/products/your-product?utm_source=your-product",
+    "src": "https://neeed.directory/badges/neeed-badge-light.svg",
+    "alt": "Featured on neeed.directory",
+    "title": "",
+    "width": 139,
+    "height": 20,
+    "enabled": true
+  },
+  {
+    "id": "findly",
+    "href": "https://findly.tools/compresser-pdf?utm_source=compresser-pdf",
+    "src": "https://findly.tools/badges/findly-tools-badge-light.svg",
+    "alt": "Featured on Findly.tools",
+    "title": "",
+    "width": 175,
+    "height": 55,
+    "enabled": true
+  },
+  {
+    "id": "launchbuff",
+    "href": "https://launchbuff.com/products/compresser-pdf-zk0qg8",
+    "src": "https://launchbuff.com/badge-featured-light.svg",
+    "alt": "Featured on LaunchBuff",
+    "title": "Featured on LaunchBuff",
+    "width": 256,
+    "height": 80,
+    "enabled": true
+  },
+  {
+    "id": "dailypings",
+    "href": "https://dailypings.com/p/compresser-pdf",
+    "src": "https://dailypings.com/badge-light.svg",
+    "alt": "Featured on DailyPings",
+    "title": "Featured on DailyPings",
+    "width": 179,
+    "height": 32,
+    "enabled": true
+  },
+  {
+    "id": "deeplaunch",
+    "href": "https://deeplaunch.io",
+    "src": "https://deeplaunch.io/badge/badge_light.svg",
+    "alt": "Featured on DeepLaunch.io",
+    "title": "",
+    "width": 200,
+    "height": 54,
+    "enabled": true
+  }
+]

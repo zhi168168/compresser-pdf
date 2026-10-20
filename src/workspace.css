@@ -285,12 +285,6 @@ h3 { font-size: 18px; line-height: 1.5; font-weight: 600; letter-spacing: -.3px;
 
 @media(max-width:600px){.brand-logo{width:174px}.site-footer .brand-logo{width:174px}}
 
-.site-footer .directory-badge { display: inline-flex; flex: 0 0 auto; align-items: center; }
-.site-footer .directory-badge img { display: block; width: 139px; height: 20px; }
-
-.site-footer .findly-badge img { width: 175px; height: 55px; }
-
-.site-footer .launchbuff-badge img { width: 256px; height: 80px; }
-
-.site-footer .dailypings-badge img { width: 179px; height: 32px; }
-.site-footer .deeplaunch-badge img { width: 200px; height: 54px; }
+.site-footer > .footer-badges { flex-basis: 100%; margin-left: 0; align-items: center; gap: 20px; }
+.footer-badges .directory-badge { display: inline-flex; flex: 0 0 auto; align-items: center; max-width: 100%; }
+.footer-badges .directory-badge img { display: block; max-width: 100%; object-fit: contain; }

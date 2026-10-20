@@ -24,7 +24,7 @@ const escape = value => value.replaceAll('&', '&amp;').replaceAll('"', '&quot;')
 async function findHtml(dir) {
   const entries = await readdir(dir, { withFileTypes: true });
   const nested = await Promise.all(entries.map(entry => entry.isDirectory() ? findHtml(resolve(dir, entry.name)) : entry.name.endsWith('.html') ? [resolve(dir, entry.name)] : []));
-  return nested.flat();
+  return nested.flat().filter(file => !relative(root, file).split(sep).includes('admin'));
 }
 const pages = await findHtml(root);
 const pagePaths = new Set(pages.map(file => '/' + relative(root, file).split(sep).join('/').replace(/index\.html$/, '')));

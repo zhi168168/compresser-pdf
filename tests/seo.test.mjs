@@ -20,7 +20,7 @@ async function htmlFiles(dir, prefix = '') {
   const result = await Promise.all(entries.map(entry => entry.isDirectory()
     ? htmlFiles(join(dir, entry.name), prefix + entry.name + '/')
     : entry.name.endsWith('.html') ? [prefix + entry.name] : []));
-  return result.flat().sort();
+  return result.flat().filter(path => !path.startsWith('admin/')).sort();
 }
 async function builtPages(root = dist) {
   const paths = await htmlFiles(root);
@@ -77,6 +77,15 @@ test('twelve built pages have unique metadata, one H1, French/English language a
       assert.ok(schema['@graph'].length > 0);
     }
   }
+});
+
+test('private badge management stays noindex and outside generated sitemap', async () => {
+  const html = await readFile(join(dist, 'admin/badges.html'), 'utf8');
+  assert.match(html, /name="robots" content="noindex, nofollow"/);
+  assert.doesNotMatch(html, /rel="canonical"/);
+  const config = JSON.parse(await readFile(join(project, 'vercel.json'), 'utf8'));
+  assert.ok(config.headers.some(rule => rule.source === '/admin/:path*' && rule.headers.some(h => h.key === 'X-Robots-Tag' && /noindex/.test(h.value))));
+  try { assert.doesNotMatch(await readFile(join(dist, 'sitemap.xml'), 'utf8'), /\/admin\//); } catch (error) { if (error.code !== 'ENOENT') throw error; }
 });
 
 test('relative internal links and asset references resolve to real files and fragments', async () => {
