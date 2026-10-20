@@ -2,6 +2,8 @@
 
 ## Trust and citable content update — 2026-10-20
 
+Homepage follow-up: both homepages now show the technical citations directly, replace mode cards with a native HTML comparison table (caption, column headers and row headers), and lead mode choice, steps, privacy and quality sections with direct answers. On narrow screens the table scrolls inside its focusable region; desktop/390px/320px checks confirm no page overflow. A third-party content score has not been rerun and no specific score is promised.
+
 The site now has twelve static pages: French and English home, quality guide, privacy, about, contact and terms pages. All pages link to about/contact/privacy/terms from the footer. Alan is the user-confirmed operator and content maintainer. The public support/privacy/correction address is `report@compresser-pdf.com`, including account dialogs. Mail delivery to this address requires a separately working mailbox; a mailto link does not verify delivery.
 
 Guides identify Alan and link to the about page, answer question headings directly, compare the three actual modes in accessible tables, and cite pdf-lib and MDN primary technical documentation. The 100 MiB input limit and eligible-image 2,000-pixel cap are verified implementation parameters, not invented compression benchmarks. No claimed SEO visibility increases, reduction rates, testimonials or credentials were added.

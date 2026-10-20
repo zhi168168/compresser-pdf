@@ -117,6 +117,22 @@ progress::-webkit-progress-value { background: var(--green); border-radius: 6px;
 h2 { font-size: 32px; line-height: 1.25; letter-spacing: -1px; font-weight: 650; }
 h3 { font-size: 18px; line-height: 1.5; font-weight: 600; letter-spacing: -.3px; }
 .compression-guide { padding-block: 64px; scroll-margin-top: 30px; }
+.section-heading > p { max-width: 760px; margin-inline: auto; }
+.mode-table-scroll { max-width: 100%; overflow-x: auto; margin-top: 30px; border: 1px solid var(--border); border-radius: 10px; }
+.mode-table { width: 100%; min-width: 640px; border-collapse: collapse; text-align: left; font-size: 14px; line-height: 1.75; }
+.mode-table caption { text-align: left; padding: 18px 20px; color: var(--muted); }
+.mode-table th, .mode-table td { padding: 18px 20px; vertical-align: top; border-top: 1px solid var(--border); }
+.mode-table thead { background: var(--surface, #f3f5f1); }
+.mode-table tbody th { width: 19%; font-weight: 600; }
+.mode-table td { color: var(--muted); }
+.mode-table .recommended-label { display: inline-block; margin-top: 6px; }
+.mode-table-note { margin-top: 16px; font-size: 13px; line-height: 1.8; color: var(--muted); }
+.mode-table-scroll:focus-visible { outline: 3px solid var(--green); outline-offset: 4px; }
+.technical-sources { padding-block: 36px 48px; border-top: 1px solid var(--border); }
+.technical-sources h2 { font-size: 23px; }
+.technical-sources p, .technical-sources li { font-size: 14px; line-height: 1.85; color: var(--muted); margin-top: 12px; }
+.technical-sources ul { padding-left: 22px; }
+.technical-sources a { color: var(--green); text-decoration: underline; text-underline-offset: 3px; overflow-wrap: anywhere; }
 .section-heading { text-align: center; }
 .section-heading > p { margin-top: 12px; color: var(--muted); font-size: 15px; line-height: 1.7; }
 .mode-comparison { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 34px; border-block: 1px solid var(--border); }
