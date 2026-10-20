@@ -2,6 +2,13 @@ export const isFrench = (typeof document === 'undefined' ? 'fr' : document.docum
 export const locale = isFrench ? 'fr-FR' : 'en-US';
 
 const french = {
+  'Download PDF': 'Télécharger le PDF',
+  'Sign in to download': 'Se connecter pour télécharger',
+  'Your PDF is ready. Your file and comparison are preserved.': 'Votre PDF est prêt. Votre fichier et le comparatif sont conservés.',
+  'Compression is complete. Sign in to download; your file and comparison will stay here.': 'La compression est terminée. Connectez-vous pour télécharger : votre fichier et le comparatif restent ici.',
+  'Your saved workspace could not be restored. Please select your PDF again.': 'Impossible de restaurer votre session. Sélectionnez à nouveau votre PDF.',
+  'We could not verify your sign-in. Your result is still here. Please try again.': 'Impossible de vérifier votre connexion. Votre résultat reste ici. Veuillez réessayer.',
+  'We could not preserve your PDF for the sign-in redirect. Your result is still here. Use email sign-in or allow browser storage and try again.': 'Impossible de conserver votre PDF pendant la redirection. Votre résultat reste ici. Connectez-vous par e-mail ou autorisez le stockage du navigateur et réessayez.',
   'Choose a PDF smaller than 100 MB.': 'Choisissez un PDF de moins de 100 Mo.',
   'Please choose a PDF smaller than 100 MB. Large files may also exceed your device’s memory.': 'Choisissez un PDF de moins de 100 Mo. Les fichiers volumineux peuvent dépasser la mémoire disponible sur votre appareil.',
   'This file is empty. Please choose another PDF.': 'Ce fichier est vide. Choisissez un autre PDF.',

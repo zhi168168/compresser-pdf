@@ -41,7 +41,8 @@ test('French-first workflow, localized errors/results/account states, and an exp
     assert(!requests.some(request => request.url.includes('document.pdf') || request.url.includes('invalide.pdf')));
     await page.locator('#start-over').click();
     await page.reload();
-    await page.locator('input[value="recommended"]:checked').waitFor({ state: 'visible' });
+    assert(await page.locator('input[value="recommended"]').isChecked());
+    assert.equal(await page.locator('#compression-settings').isVisible(), false);
     await mkdir('docs/screenshots', { recursive: true });
     await page.screenshot({ path: 'docs/screenshots/french-desktop.png' });
     await page.setViewportSize({ width: 390, height: 844 });

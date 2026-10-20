@@ -1,6 +1,8 @@
 # Accounts: Vercel Functions + Neon
 
-The recommended deployment is Vercel static pages + a same-origin Better Auth Function at `/api/auth/*` + Neon PostgreSQL. No separate VM is required. PDF compression remains entirely local and works without an account; there is no PDF upload endpoint. PostgreSQL stores account metadata, password hashes, sessions, verification/OAuth and rate-limit records, never PDFs.
+The recommended deployment is Vercel static pages + a same-origin Better Auth Function at `/api/auth/*` + Neon PostgreSQL. No separate VM is required. PDF compression and comparison remain entirely local and work without an account; downloads require a fresh authenticated session. There is no PDF upload endpoint. PostgreSQL stores account metadata, password hashes, sessions, verification/OAuth and rate-limit records, never PDFs.
+
+The download gate opens the existing login dialog without replacing the workspace. Same-page email sign-in closes the gate and unlocks downloading. Before Google navigation or sending email verification/recovery callbacks, the app commits the original/output blobs and mode to IndexedDB, then includes only a random workspace resume ID in the callback URL. It restores blobs into new object URLs on return, never reuses stale blob URLs and never recompresses just to recover state. Each tab has an independent resume ID unless a callback explicitly carries one. Reset/replacement clears the saved record; expired records are not restored after one hour. Storage failure blocks external login navigation with an actionable message while leaving email login and the in-memory result intact. See `tests/download-gate.test.mjs` for mocked login/callback coverage; it does not authenticate a real Google account.
 
 See [DEPLOYMENT.md](DEPLOYMENT.md) for the production procedure. Credentials are server-only. Never use `VITE_*` for secrets or put production credentials on Preview deployments.
 

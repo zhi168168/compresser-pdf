@@ -46,6 +46,9 @@ const frenchAccountCopy = {
   'Your reset link is invalid or expired. Request a new link.': 'Ce lien est invalide ou a expiré. Demandez un nouveau lien.',
   'Email verified. You can now sign in.': 'Adresse e-mail confirmée. Vous pouvez vous connecter.',
   'Sign-in could not be completed. Please try again.': 'La connexion n’a pas abouti. Veuillez réessayer.',
+  'Sign in to download your PDF. Your file and compression results stay here.': 'Connectez-vous pour télécharger votre PDF. Votre fichier et le résultat de compression restent ici.',
+  'You can compress without an account. Sign in to download your PDF.': 'Vous pouvez compresser sans compte. Connectez-vous pour télécharger votre PDF.',
+  'We could not preserve your PDF for the sign-in redirect. Your result is still here. Use email sign-in or allow browser storage and try again.': 'Impossible de conserver votre PDF pendant la redirection. Votre résultat reste ici. Connectez-vous par e-mail ou autorisez le stockage du navigateur et réessayez.',
 };
 
 export function translateAuthText(text, locale = 'fr') {
@@ -54,7 +57,7 @@ export function translateAuthText(text, locale = 'fr') {
   return frenchAccountCopy[trimmed] ? text.replace(trimmed, frenchAccountCopy[trimmed]) : text;
 }
 
-export function initAuth() {
+export function initAuth({ onUserChange = () => {}, beforeRedirect = async () => `${location.origin}${location.pathname}` } = {}) {
   const locale = document.documentElement.lang === 'en' ? 'en' : 'fr';
   const t = text => translateAuthText(text, locale);
   const dialog = document.createElement('dialog');
@@ -62,6 +65,7 @@ export function initAuth() {
   dialog.setAttribute('aria-labelledby', 'account-title');
   document.body.append(dialog);
   let view = 'login', config = null, user = null, busy = false, configurationError = '', deletionEmailSent = false;
+  let downloadIntent = false;
   const unavailableMessage = 'Accounts are not configured yet. You can still compress PDFs for free without an account.';
   const submissionDisabled = () => !config?.configured || (view === 'register' && !config.emailRegistration) || (view === 'forgot' && !config.passwordReset) || (view === 'delete' && (!config.accountDeletion || deletionEmailSent));
   const escape = value => String(value).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -69,6 +73,19 @@ export function initAuth() {
   const resetToken = query.get('token');
   const isReset = query.get('account') === 'reset';
   const callbackURL = `${location.origin}${location.pathname}`;
+  async function redirectURL(account) {
+    const url = new URL(await beforeRedirect(), location.origin);
+    if (account) url.searchParams.set('account', account);
+    return url.href;
+  }
+  async function refreshSession() {
+    await configurationReady;
+    if (!config?.configured) return null;
+    const session = await api('get-session');
+    user = session?.user || null;
+    updateTriggers(); onUserChange(user);
+    return user;
+  }
   async function api(path, data) {
     const response = await fetch(`/api/auth/${path}`, {
       method: data ? 'POST' : 'GET', credentials: 'same-origin', cache: 'no-store',
@@ -93,7 +110,7 @@ export function initAuth() {
     const titles = { login: 'Welcome back', register: 'Create an account', forgot: 'Reset your password', reset: 'Choose a new password', account: 'Your account', delete: 'Before deleting your account' };
     dialog.innerHTML = `<button type="button" class="account-close" aria-label="Close account dialog">×</button>
       <p class="account-eyebrow">COMPRESSER PDF</p><h2 id="account-title">${titles[view]}</h2>
-      <p class="account-intro">${view === 'account' ? 'Account settings are separate from your files.' : 'An account is optional. PDF compression always happens on your device.'}</p>
+      <p class="account-intro">${view === 'account' ? 'Account settings are separate from your files.' : downloadIntent ? 'Sign in to download your PDF. Your file and compression results stay here.' : 'You can compress without an account. Sign in to download your PDF.'}</p>
       ${view === 'account' ? `<p class="account-identity">${escape(user?.name || '')}<br><span>${escape(user?.email || '')}</span></p><div class="account-actions"><button type="button" class="account-signout" data-account-logout>Sign out</button><button type="button" class="account-delete-link" data-account-view="delete">Delete account</button></div><p class="account-help">For account or privacy help, contact <a href="mailto:zhihaosong168@gmail.com">zhihaosong168@gmail.com</a></p>` : view === 'delete' ? `
       <p class="account-help">Deleting your account permanently removes your profile, linked sign-ins and all active sessions. This does not delete your Google account or files on your device.</p>
       <p class="account-help">We will email a confirmation link valid for one hour. Open it in this browser while still signed in. Nothing is deleted until you confirm.</p>
@@ -120,13 +137,15 @@ export function initAuth() {
     dialog.querySelector('.account-close').onclick = () => dialog.close();
     dialog.querySelectorAll('[data-account-view]').forEach(button => button.onclick = () => { view = button.dataset.accountView; deletionEmailSent = false; render(); });
     dialog.querySelector('[data-account-google]')?.addEventListener('click', () => action(async () => {
-      const result = await api('sign-in/social', { provider: 'google', callbackURL, errorCallbackURL: `${callbackURL}?account=error` });
+      const callback = await redirectURL();
+      const errorCallback = new URL(callback); errorCallback.searchParams.set('account', 'error');
+      const result = await api('sign-in/social', { provider: 'google', callbackURL: callback, errorCallbackURL: errorCallback.href });
       if (!result.url) throw new Error('Google sign-in did not return an authorization URL.');
       const url = new URL(result.url);
       if (url.protocol !== 'https:' || url.hostname !== 'accounts.google.com') throw new Error('Unexpected Google authorization destination.');
       location.assign(url.href);
     }));
-    dialog.querySelector('[data-account-logout]')?.addEventListener('click', () => action(async () => { await api('sign-out', {}); user = null; updateTriggers(); view = 'login'; render(); status('You have signed out.'); }));
+    dialog.querySelector('[data-account-logout]')?.addEventListener('click', () => action(async () => { await api('sign-out', {}); user = null; updateTriggers(); onUserChange(null); view = 'login'; render(); status('You have signed out.'); }));
     dialog.querySelector('form')?.addEventListener('submit', event => {
       event.preventDefault();
       const data = Object.fromEntries(new FormData(event.currentTarget));
@@ -153,12 +172,14 @@ export function initAuth() {
             if (error.status === 429) throw error;
             throw new Error('Unable to sign in. Check your email and password, and verify your email before signing in.');
           }
-          const session = await api('get-session'); user = session.user; updateTriggers(); view = 'account'; render();
+          if (!await refreshSession()) throw new Error('Unable to sign in. Check your email and password, and verify your email before signing in.');
+          if (downloadIntent) { dialog.close(); downloadIntent = false; }
+          else { view = 'account'; render(); }
         } else if (view === 'register') {
-          await api('sign-up/email', { ...data, locale, callbackURL: `${callbackURL}?account=verified` });
+          await api('sign-up/email', { ...data, locale, callbackURL: await redirectURL('verified') });
           status('If this address can be registered, a verification email will arrive shortly. Check your inbox before signing in.');
         } else if (view === 'forgot') {
-          await api('request-password-reset', { email: data.email, locale, redirectTo: `${callbackURL}?account=reset` });
+          await api('request-password-reset', { email: data.email, locale, redirectTo: await redirectURL('reset') });
           status('If an eligible account exists, a password reset email will arrive shortly.');
         } else {
           if (!resetToken) throw new Error('This reset link is incomplete. Request a new link.');
@@ -182,7 +203,8 @@ export function initAuth() {
       const submit = dialog.querySelector('[type="submit"]'); if (submit) submit.disabled = submissionDisabled();
     }
   }
-  async function open() {
+  async function open({ forDownload = false } = {}) {
+    downloadIntent = forDownload;
     view = user ? 'account' : 'login'; render(); dialog.showModal();
     if (!config) {
       status('Connecting to account service…');
@@ -195,13 +217,13 @@ export function initAuth() {
   dialog.addEventListener('click', event => { if (event.target === dialog) { const rect = dialog.getBoundingClientRect(); if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) dialog.close(); } });
   // Discover capabilities before requesting any account/session data. An unconfigured
   // deployment returns HTTP 200 here and makes no further account network requests.
-  const configurationReady = api('config').then(settings => {
+  const configurationReady = api('config').then(async settings => {
     if (typeof settings.configured !== 'boolean' || typeof settings.google !== 'boolean' || typeof settings.emailRegistration !== 'boolean' || typeof settings.passwordReset !== 'boolean') throw new Error(unavailableMessage);
     config = settings;
     if (dialog.open) render();
     if (config.configured) {
       // Session calls contain account metadata only; never pass selected files here.
-      api('get-session').then(session => { user = session?.user || null; updateTriggers(); }).catch(() => {});
+      try { const session = await api('get-session'); user = session?.user || null; updateTriggers(); onUserChange(user); } catch { /* download checks retry the session */ }
     }
   }).catch(error => { configurationError = frenchAccountCopy[error.message] ? error.message : unavailableMessage; if (dialog.open) render(); });
   if (isReset || ['error', 'verified', 'deleted'].includes(query.get('account'))) {
@@ -212,4 +234,5 @@ export function initAuth() {
       else status(query.get('account') === 'verified' ? 'Email verified. You can now sign in.' : 'Sign-in could not be completed. Please try again.', query.get('account') === 'error');
     });
   }
+  return { open, refreshSession, isSignedIn: () => Boolean(user), ready: configurationReady };
 }

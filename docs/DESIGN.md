@@ -1,5 +1,9 @@
 # Design specification
 
+> **Current design (2026-10-20):** [PDF workspace redesign](UI-REDESIGN.md) supersedes the historical specification below. The current homepage uses a centered task heading and staged 880px workspace, neutral-gray hero canvas, readable controls, a compression-mode comparison and synchronized French/English layouts. See the new specification for browser verification and deviations.
+
+## Historical design before the workspace redesign
+
 French-first update: French is the default; English lives at `/en/`. All static sections, compression status/errors/results and account UI are localized. A language selector stays visible on narrow screens. The primary French heading is “Compresser un PDF — Gardez l’essentiel.” French long copy uses the existing system without shrinking controls. Final desktop/mobile renders were inspected; header spacing, title wraps, French accents, selection controls and language links remain readable. Account interfaces use request-language email templates and French fallback. The mobile FAQ title has explicit whitespace around its hidden line break. Final screenshots: `docs/screenshots/french-desktop.png` and `french-mobile.png`.
 
 The Image Gen capability was unavailable in this session. The implementation therefore uses a documented code-native design instead of presenting an ungenerated concept as accepted artwork.

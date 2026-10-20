@@ -1,6 +1,8 @@
 # compresser pdf
 
-A French-first PDF compressor with a complete English alternative at `/en/` and a browser-only document pipeline. No PDF upload API, external fonts, analytics, trackers, or AI document service. Accounts are optional and separate from document processing.
+A French-first PDF compressor with a complete English alternative at `/en/` and a browser-only document pipeline. No PDF upload API, external fonts, analytics, trackers, or AI document service. Guests can compress and compare results; downloading requires a verified account session. Account requests remain separate from document processing.
+
+Before a sign-in redirect, the browser temporarily saves the original PDF, output PDF, selected mode and comparison metadata in IndexedDB. A random resume ID restores the same workspace after Google sign-in or email verification/recovery callbacks, including same-browser links opened in a new tab. Saved workspaces expire after one hour and are removed when replaced/reset or during later cleanup. PDF bytes and names are never included in account requests. If browser storage is blocked, redirect sign-in is stopped to preserve the in-memory result; same-page email login remains available. A signed-in session is rechecked before every download. This is a client-side product gate, not server-side control over locally processed bytes.
 
 French is the default for the tool, guides, privacy policy, account interface, and account emails. English pages have independent URLs under `/en/`. Users switch languages explicitly; browser settings and IP addresses never force a redirect. Each translated page keeps its own canonical with reciprocal `fr`, `en`, and `x-default` language links on a production-domain build. Numeric formatting uses French decimal commas and o/Ko/Mo units on French pages.
 
