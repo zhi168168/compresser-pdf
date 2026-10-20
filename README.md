@@ -6,6 +6,20 @@ Before a sign-in redirect, the browser temporarily saves the original PDF, outpu
 
 French is the default for the tool, guides, privacy policy, account interface, and account emails. English pages have independent URLs under `/en/`. Users switch languages explicitly; browser settings and IP addresses never force a redirect. Each translated page keeps its own canonical with reciprocal `fr`, `en`, and `x-default` language links on a production-domain build. Numeric formatting uses French decimal commas and o/Ko/Mo units on French pages.
 
+## Google Analytics button events
+
+Both languages send the same GA4 event names to `G-LH7981PXLL`:
+
+| Button | Event name |
+| --- | --- |
+| Choose PDF | `choose_pdf_click` |
+| Compress PDF | `compress_pdf_click` |
+| Download PDF / Sign in to download | `download_pdf_click` |
+
+The only custom parameter is `language` (`fr` or `en`). Choosing a PDF counts opening the picker by mouse or keyboard, even if the visitor cancels; dragging a file does not count as a button click. Download counts the button activation before checking sign-in, not a successful download. No filename, PDF content or account identifier is sent. Analytics failure does not block the tool.
+
+In GA4, use Reports > Engagement > Events (or Explore with Event name as rows) and compare **Event count** with **Total users**. Event count measures repeated clicks; Total users measures distinct GA-observed users per event, not identifiable people. Events start after deployment and may take 24–48 hours to populate standard reports; Realtime can help verify collection sooner. These events do not need to be marked as key events to count clicks.
+
 ## Run locally
 
 Node.js 22+ and pnpm are required.

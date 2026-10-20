@@ -21,6 +21,14 @@ let restoring = true;
 let downloadBusy = false;
 const storageError = 'We could not preserve your PDF for the sign-in redirect. Your result is still here. Use email sign-in or allow browser storage and try again.';
 
+function trackButtonClick(eventName) {
+  // Analytics must never interrupt file selection, compression or download.
+  // Send no document names, contents or account identifiers.
+  try {
+    window.gtag?.('event', eventName, { language: isFrench ? 'fr' : 'en' });
+  } catch { /* The tool remains usable when analytics is unavailable. */ }
+}
+
 function forgetWorkspace() {
   const oldID = workspaceID; workspaceID = null;
   if (oldID) storageTask = storageTask.catch(() => {}).then(() => deleteWorkspace(oldID)).catch(() => {});
@@ -124,8 +132,13 @@ async function selectFile(file) {
   } catch { if (version === selectionVersion) showError('We could not read this file. Please choose it again.'); }
 }
 
-dropZone.addEventListener('click', () => { if (!busy && !restoring) input.click(); });
-dropZone.addEventListener('keydown', (event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); if (!busy && !restoring) input.click(); } });
+function openFilePicker() {
+  if (busy || restoring) return;
+  trackButtonClick('choose_pdf_click');
+  input.click();
+}
+dropZone.addEventListener('click', openFilePicker);
+dropZone.addEventListener('keydown', (event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openFilePicker(); } });
 input.addEventListener('change', () => { selectFile(input.files?.[0]); input.value = ''; });
 for (const type of ['dragenter', 'dragover']) dropZone.addEventListener(type, (event) => { event.preventDefault(); if (!busy) dropZone.classList.add('is-dragging'); });
 for (const type of ['dragleave', 'drop']) dropZone.addEventListener(type, (event) => { event.preventDefault(); dropZone.classList.remove('is-dragging'); });
@@ -167,6 +180,7 @@ $('cancel-button').addEventListener('click', () => { controller?.abort(); $('pro
 
 compressButton.addEventListener('click', async () => {
   if (!selectedFile || busy) return;
+  trackButtonClick('compress_pdf_click');
   const file = selectedFile;
   clearError(); clearOutput(); setBusy(true);
   controller = new AbortController();
@@ -196,6 +210,7 @@ const workspaceReady = restoreWorkspace();
 const auth = initAuth({ beforeRedirect: preserveWorkspace, onUserChange: () => { updateDownloadButton(); } });
 $('download-button').addEventListener('click', async () => {
   if (downloadBusy || !completedResult || !outputUrl) return;
+  trackButtonClick('download_pdf_click');
   downloadBusy = true;
   const currentResult = completedResult;
   $('download-button').disabled = true;
