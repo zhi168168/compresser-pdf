@@ -160,7 +160,8 @@ h3 { font-size: 18px; line-height: 1.5; font-weight: 600; letter-spacing: -.3px;
 .site-footer { display: flex; align-items: center; flex-wrap: wrap; gap: 24px; padding-block: 28px; border-top: 1px solid var(--border); }
 .site-footer .brand { font-size: 19px; gap: 0; }
 .site-footer > p { font-size: 13px; color: var(--muted); }
-.site-footer > div { display: flex; gap: 24px; margin-left: auto; font-size: 13px; color: var(--muted); }
+.site-footer > div { display: flex; flex-wrap: wrap; gap: 16px 24px; margin-left: auto; font-size: 13px; color: var(--muted); }
+.faq-list .content-credit { font-size: 12px; line-height: 1.8; color: var(--muted); margin-top: 24px; }
 .site-footer a:hover { color: var(--green); }
 
 /* Account chrome shares the tool's type scale and neutral surfaces. */

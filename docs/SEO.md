@@ -1,5 +1,15 @@
 # SEO implementation and open-source research
 
+## Trust and citable content update — 2026-10-20
+
+The site now has twelve static pages: French and English home, quality guide, privacy, about, contact and terms pages. All pages link to about/contact/privacy/terms from the footer. Alan is the user-confirmed operator and content maintainer. The public support/privacy/correction address is `report@compresser-pdf.com`, including account dialogs. Mail delivery to this address requires a separately working mailbox; a mailto link does not verify delivery.
+
+Guides identify Alan and link to the about page, answer question headings directly, compare the three actual modes in accessible tables, and cite pdf-lib and MDN primary technical documentation. The 100 MiB input limit and eligible-image 2,000-pixel cap are verified implementation parameters, not invented compression benchmarks. No claimed SEO visibility increases, reduction rates, testimonials or credentials were added.
+
+Visible `<time datetime>` dates feed `dateModified` in JSON-LD and sitemap `lastmod`. Dates reflect this reviewed content update, not each deployment. Original publication dates are unknown and deliberately omitted. Guides use Article, about pages AboutPage and contact pages ContactPage, with Alan as a Person author/publisher. Preview/missing-origin builds remain noindex with no production structured data or sitemap.
+
+Validation: production build; root suite 20/20, including production/preview SEO checks for all twelve pages, translated URLs, dates, author, cited references, sitemap, internal links and metadata idempotence. Browser checks cover all twelve pages at 1440, 390 and 320 CSS pixels, with no document-level horizontal overflow; wide guide tables scroll within their own keyboard-focusable region. This is browser validation, not physical-device testing or a promise of rankings.
+
 ## Research record
 
 GitHub REST API queried live on **2026-10-19 (Asia/Shanghai)**. Star counts below are a dated snapshot, not proof of Google ranking. Read each project's actual README; selected by relevance first, then community adoption. No third-party website template or content was copied.
@@ -40,14 +50,14 @@ Recommended script:
 
 Set Vercel **Production** environment variable `SITE_URL` to the final HTTPS origin, for example your actual custom domain. Do not use the example literally. No path, query string, credentials, or fragment. Vercel Preview builds are noindex even if this variable is inherited. Missing `SITE_URL` deliberately produces noindex, a `Disallow: /` robots file, no canonical/OG URL, and no sitemap. This prevents accidentally publishing a fabricated domain. It must be configured before a public SEO launch.
 
-The postbuild script reads all six built HTML pages, checks the expected French or English language, a translated counterpart, a single H1, title and description, then writes:
+The postbuild script reads all twelve built HTML pages, checks the expected French or English language, a translated counterpart, a single H1, title and description, then writes:
 
 - Unique absolute canonical per page, based on its deployed URL.
 - Reciprocal French/English/x-default alternate links on each translated pair.
 - Robots metadata and robots.txt with correct production/preview behavior.
 - Open Graph and Twitter text metadata, with `fr_FR`/`en_US` locale and alternate locale.
 - Homepage WebSite/WebApplication JSON-LD and WebPage data for other pages, with corresponding `inLanguage`; the shared WebSite lists both languages, and each homepage app uses its own URL and ID. No fabricated ratings or organizations.
-- XML sitemap of the six actual built HTML pages, including language alternate links. No fake dates or keyword pages.
+- XML sitemap of the twelve actual built HTML pages, including language alternate links. No fake dates or keyword pages.
 
 `public/social.svg` is a source illustration, deliberately not advertised as an OG image because social parsers do not consistently accept SVG. Add a real exported PNG before using `og:image`; the current text-only social metadata is intentional. No external font or image request is required by the reading pages.
 

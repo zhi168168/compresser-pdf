@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 const project = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const dist = join(project, 'dist');
 const origin = 'https://seo-audit.invalid';
-const expected = ['en/guides/compress-pdf-without-losing-quality.html', 'en/index.html', 'en/privacy.html', 'guides/compress-pdf-without-losing-quality.html', 'index.html', 'privacy.html'];
+const expected = ['about.html', 'contact.html', 'en/about.html', 'en/contact.html', 'en/guides/compress-pdf-without-losing-quality.html', 'en/index.html', 'en/privacy.html', 'en/terms.html', 'guides/compress-pdf-without-losing-quality.html', 'index.html', 'privacy.html', 'terms.html'];
 const urlPath = path => '/' + path.replace(/index\.html$/, '');
 const languageOf = path => path.startsWith('en/') ? 'en' : 'fr';
 function alternatesOf(html) {
@@ -34,7 +34,7 @@ function structuredData(html) {
     .map(match => JSON.parse(match[1]));
 }
 
-test('six built pages have unique metadata, one H1, French/English language and parseable JSON-LD', async () => {
+test('twelve built pages have unique metadata, one H1, French/English language and parseable JSON-LD', async () => {
   const pages = await builtPages();
   assert.deepEqual(pages.map(page => page.path), expected, 'Run npm run build before this test.');
   const titles = new Set();
@@ -104,6 +104,24 @@ test('SEO postbuild handles production, preview and missing domain in an isolate
       assert.match(html, /property="og:url"/);
       assert.equal(structuredData(html).length, 1);
       const graph = structuredData(html)[0]['@graph'];
+      const page = graph.find(item => ['WebPage', 'Article', 'AboutPage', 'ContactPage'].includes(item['@type']));
+      assert.ok(page, path);
+      assert.equal(page.author.name, 'Alan', path);
+      assert.equal(page.dateModified, '2026-10-20', path);
+      assert.match(html, /<time datetime="2026-10-20">/, path);
+      assert.equal((html.match(/name="author"/g) || []).length, 1, path);
+      assert.doesNotMatch(html, /zhihaosong168@gmail\.com/, path);
+      for (const slug of ['about', 'contact', 'privacy', 'terms']) {
+        const base = languageOf(path) === 'en' ? '/en/' : '/';
+        assert.ok(html.includes(`href="${base}${slug}.html"`), `${path}: missing ${slug} link`);
+      }
+      if (frenchPath.startsWith('/guides/')) {
+        assert.equal(page['@type'], 'Article');
+        assert.equal(page.citation.length, 2);
+        for (const citation of page.citation) assert.ok(html.includes(`href="${citation}"`));
+        assert.match(html, /<table>/);
+        assert.ok(!page.datePublished, 'Do not invent an original publication date');
+      }
       assert.ok(graph.every(item => item.url?.startsWith(origin)));
       for (const item of graph) assert.deepEqual(item.inLanguage, item['@type'] === 'WebSite' ? ['fr', 'en'] : languageOf(path));
       if (frenchPath === '/') {
@@ -113,8 +131,9 @@ test('SEO postbuild handles production, preview and missing domain in an isolate
       }
     }
     const sitemap = await readFile(join(fixture, 'sitemap.xml'), 'utf8');
-    assert.equal((sitemap.match(/<loc>/g) || []).length, 6);
-    assert.equal((sitemap.match(/<xhtml:link /g) || []).length, 18);
+    assert.equal((sitemap.match(/<loc>/g) || []).length, 12);
+    assert.equal((sitemap.match(/<xhtml:link /g) || []).length, 36);
+    assert.equal((sitemap.match(/<lastmod>2026-10-20<\/lastmod>/g) || []).length, 12);
     for (const path of expected) assert.ok(sitemap.includes(origin + urlPath(path)));
     assert.equal(await readFile(join(fixture, 'robots.txt'), 'utf8'), `User-agent: *\nAllow: /\nSitemap: ${origin}/sitemap.xml\n`);
     for (const env of [{ SITE_URL: origin, VERCEL_ENV: 'preview' }, { SITE_URL: '', VERCEL_ENV: 'production' }]) {

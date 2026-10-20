@@ -35,6 +35,8 @@ for (const file of pages) {
   const canonical = origin ? new URL(path, origin).href : undefined;
   const title = html.match(/<title>([\s\S]*?)<\/title>/i)?.[1];
   const description = html.match(/<meta\s+name=["']description["']\s+content=(["'])([\s\S]*?)\1/i)?.[2];
+  // Dates come from reviewed, visible content, never the build clock.
+  const dateModified = html.match(/<time\s+datetime="(\d{4}-\d{2}-\d{2})"/)?.[1];
   if (!title || !description || !new RegExp(`<html\\b[^>]*\\blang=["']${language}["']`, 'i').test(html) || (html.match(/<h1\b/gi) || []).length !== 1) {
     throw new Error(`SEO validation failed: ${path} needs ${language} language, unique H1, title and description.`);
   }
@@ -55,16 +57,21 @@ for (const file of pages) {
     '<meta name="twitter:card" content="summary">',
     `<meta name="twitter:title" content="${escape(title)}">`,
     `<meta name="twitter:description" content="${escape(description)}">`,
+    '<meta name="author" content="Alan">',
   ];
+  if (dateModified) meta.push(`<meta property="article:modified_time" content="${dateModified}T00:00:00+08:00">`);
   if (production) {
     meta.push(`<link rel="canonical" href="${escape(canonical)}">`, `<meta property="og:url" content="${escape(canonical)}">`);
     for (const [lang, alternate] of Object.entries(alternatePaths)) meta.push(`<link rel="alternate" hreflang="${lang}" href="${escape(new URL(alternate, origin).href)}">`);
+    const author = { '@type': 'Person', '@id': origin + '/about.html#alan', name: 'Alan', url: origin + (language === 'en' ? '/en' : '') + '/about.html' };
+    const responsibility = { author, publisher: author, ...(dateModified ? { dateModified } : {}) };
     const graph = frenchPath === '/' ? [
-      { '@type': 'WebSite', '@id': origin + '/#website', name: 'compresser pdf', url: origin + '/', inLanguage: ['fr', 'en'] },
+      { '@type': 'WebSite', '@id': origin + '/#website', name: 'compresser pdf', url: origin + '/', inLanguage: ['fr', 'en'], publisher: author },
       { '@type': 'WebApplication', '@id': canonical + '#app', name: 'compresser pdf', url: canonical, inLanguage: language, applicationCategory: 'UtilitiesApplication', operatingSystem: 'Any modern web browser', browserRequirements: 'Requires JavaScript and Web Workers; image compression requires OffscreenCanvas', description, isAccessibleForFree: true },
-    ] : [{ '@type': 'WebPage', name: title, description, url: canonical, inLanguage: language, isPartOf: { '@id': origin + '/#website' } }];
+      { '@type': 'WebPage', '@id': canonical + '#page', name: title, url: canonical, inLanguage: language, ...responsibility },
+    ] : [{ '@type': frenchPath.startsWith('/guides/') ? 'Article' : frenchPath === '/about.html' ? 'AboutPage' : frenchPath === '/contact.html' ? 'ContactPage' : 'WebPage', '@id': canonical + '#page', name: title, ...(frenchPath.startsWith('/guides/') ? { headline: title, citation: ['https://pdf-lib.js.org/docs/api/classes/pdfdocument#save', 'https://developer.mozilla.org/en-US/docs/Web/API/OffscreenCanvas/convertToBlob'] } : {}), description, url: canonical, inLanguage: language, ...responsibility, isPartOf: { '@id': origin + '/#website' } }];
     meta.push(`<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@graph': graph }).replaceAll('<', '\\u003c')}</script>`);
-    urls.push({ canonical, alternatePaths });
+    urls.push({ canonical, alternatePaths, dateModified });
   }
   meta.push('<!-- seo:end -->');
   html = html.replace(/<\/head>/i, meta.join('\n') + '\n</head>');
@@ -72,7 +79,7 @@ for (const file of pages) {
 }
 await writeFile(resolve(root, 'robots.txt'), production ? `User-agent: *\nAllow: /\nSitemap: ${origin}/sitemap.xml\n` : 'User-agent: *\nDisallow: /\n');
 if (production) {
-  await writeFile(resolve(root, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${urls.map(({ canonical, alternatePaths }) => `  <url><loc>${escape(canonical)}</loc>${Object.entries(alternatePaths).map(([lang, path]) => `<xhtml:link rel="alternate" hreflang="${lang}" href="${escape(new URL(path, origin).href)}"/>`).join('')}</url>`).join('\n')}\n</urlset>\n`);
+  await writeFile(resolve(root, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${urls.map(({ canonical, alternatePaths, dateModified }) => `  <url><loc>${escape(canonical)}</loc>${dateModified ? `<lastmod>${dateModified}</lastmod>` : ''}${Object.entries(alternatePaths).map(([lang, path]) => `<xhtml:link rel="alternate" hreflang="${lang}" href="${escape(new URL(path, origin).href)}"/>`).join('')}</url>`).join('\n')}\n</urlset>\n`);
 } else {
   await unlink(resolve(root, 'sitemap.xml')).catch(error => { if (error.code !== 'ENOENT') throw error; });
 }

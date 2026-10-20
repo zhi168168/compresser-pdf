@@ -8,7 +8,7 @@ A real read-only Neon account snapshot was encrypted locally, then decrypted onl
 
 GitHub daily backup and 15-minute availability schedule variables are enabled. The availability workflow passed in [run 39358807079](https://github.com/zhi168168/compresser-pdf/actions/runs/39358807079), and the deployed health endpoint returned 200 with status ok. Production capability discovery reports accountDeletion true; privacy pages show the approved contact. GitHub Actions email notification preferences and actual failure-email receipt still require operator verification. GitHub scheduling is best-effort and no continuous uptime or alert-delivery guarantee is claimed.
 
-French and English privacy notices now identify Vercel/Neon/Brevo, explain deletion and conditional backup retention, and provide the user-authorized contact zhihaosong168@gmail.com. Mobile deletion/privacy layouts were checked for overflow. The new health endpoint must be checked on the deployed domain after release.
+French and English privacy notices now identify Vercel/Neon/Brevo, explain deletion and conditional backup retention, and provide the user-authorized contact report@compresser-pdf.com. Mobile deletion/privacy layouts were checked for overflow. The new health endpoint must be checked on the deployed domain after release.
 
 ## Vercel + Neon deployment preparation
 

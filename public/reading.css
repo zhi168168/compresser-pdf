@@ -8,3 +8,11 @@ header{flex-wrap:wrap}
 header .back{margin-left:auto}
 @media(max-width:600px){header{gap:14px 18px;padding-block:22px 16px}.language-switch{width:100%;justify-content:flex-end}.back{max-width:145px}}
 @media(max-width:380px){header .brand{font-size:23px}header .back{font-size:12px;max-width:100px}}
+footer>div{display:flex;flex-wrap:wrap;gap:18px 26px}
+.table-scroll{max-width:100%;overflow-x:auto;margin:24px 0;overscroll-behavior-x:contain}
+table{width:100%;border-collapse:collapse;min-width:580px;text-align:left;font-size:14px;line-height:1.6}
+caption{text-align:left;color:#626d63;padding-bottom:12px}
+th,td{padding:14px 12px;border:1px solid #dce2d8;vertical-align:top}
+thead{background:#e9eee5}tbody th{font-weight:600}
+.table-scroll:focus-visible{outline:3px solid #718b4b;outline-offset:4px}
+p a,li a{overflow-wrap:anywhere}
